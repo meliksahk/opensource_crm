@@ -333,3 +333,33 @@ model Contact {
   @@index([tenantId])
   @@index([email])
 }
+
+// ===== v2.1c — Nitelenmemiş Lead (Contact+Deal'e dönüştürülür) =====
+
+enum LeadStatus {
+  NEW
+  WORKING
+  QUALIFIED
+  UNQUALIFIED
+  CONVERTED
+}
+
+model Lead {
+  id                 String     @id @default(uuid())
+  firstName          String
+  lastName           String
+  email              String?
+  phone              String?
+  companyName        String?
+  source             String? // WEB, REFERRAL, EVENT, ...
+  status             LeadStatus @default(NEW)
+  ownerId            String?
+  tenantId           String?
+  convertedContactId String?
+  convertedDealId    String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@index([tenantId])
+  @@index([status])
+}

@@ -22,6 +22,14 @@ export const PERMISSIONS = {
     DELETE: 'deal.delete',
     MOVE: 'deal.move',
   },
+  // v2.1c — nitelenmemiş Lead (Contact+Deal'e dönüştürülür)
+  LEAD: {
+    CREATE: 'lead.create',
+    READ: 'lead.read',
+    UPDATE: 'lead.update',
+    DELETE: 'lead.delete',
+    CONVERT: 'lead.convert',
+  },
   INVOICE: {
     CREATE: 'invoice.create',
     READ: 'invoice.read',
@@ -84,12 +92,22 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.CONTACT.READ,
     PERMISSIONS.CONTACT.UPDATE,
     PERMISSIONS.CONTACT.DELETE,
+    PERMISSIONS.LEAD.CREATE,
+    PERMISSIONS.LEAD.READ,
+    PERMISSIONS.LEAD.UPDATE,
+    PERMISSIONS.LEAD.DELETE,
+    PERMISSIONS.LEAD.CONVERT,
   ],
   [ROLE_NAMES.SALES]: [
     PERMISSIONS.DEAL.CREATE,
     PERMISSIONS.DEAL.READ,
     PERMISSIONS.DEAL.UPDATE,
     PERMISSIONS.DEAL.MOVE,
+    // v2.1c: satışçı nitelenmemiş lead'leri yönetir ve dönüştürür
+    PERMISSIONS.LEAD.CREATE,
+    PERMISSIONS.LEAD.READ,
+    PERMISSIONS.LEAD.UPDATE,
+    PERMISSIONS.LEAD.CONVERT,
     // Faz 4: satışçı faturanın varlığını görür ama tutarları göremez
     // (invoice.read_financial YOK → API'de finansal alanlar kesilir).
     PERMISSIONS.INVOICE.READ,
@@ -115,5 +133,6 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.INVOICE.READ,
     PERMISSIONS.COMPANY.READ,
     PERMISSIONS.CONTACT.READ,
+    PERMISSIONS.LEAD.READ,
   ],
 };

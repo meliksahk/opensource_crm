@@ -16,6 +16,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { DealsModule } from './modules/deals/deals.module';
+import { LeadsModule } from './modules/leads/leads.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { HealthModule } from './modules/health/health.module';
@@ -45,6 +46,7 @@ import { TenantMiddleware } from './common/tenant/tenant.middleware';
     UsersModule,
     RolesModule,
     DealsModule,
+    LeadsModule,
     InvoicesModule,
     IntegrationsModule,
     HealthModule,
