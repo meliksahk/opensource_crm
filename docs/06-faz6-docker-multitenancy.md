@@ -262,4 +262,39 @@ Tüm tenant'a özel tablolara `tenantId String` + `@@index([tenantId])` eklenir 
 - [ ] Güvenlik kontrol listesi tamamlandı (bkz. [Güvenlik Standartları](./90-guvenlik-standartlari.md)).
 - [ ] `docker compose up` ile temiz kurulum çalışıyor.
 
+---
+
+## 10. Uygulama Notları (gerçekleşen kararlar / pragmatik sınırlar)
+
+**Docker (tam, doğrulandı):**
+- `backend/Dockerfile` çok aşamalı; runtime root değil (`app` kullanıcısı), alpine'da
+  `openssl`+`libc6-compat`, Prisma `binaryTargets` musl hedefi. Başlangıçta
+  `prisma migrate deploy` → tablolar otomatik oluşur.
+- `docker-compose.yml` (prod-benzeri): db **host'a kapalı** (iç ağ), backend `:3000`,
+  mailhog `:8025`. `docker-compose.dev.yml` override: DB portu + hot-reload.
+- Doğrulandı: `compose config` geçerli; `/api/v1/health` → `{status:ok,db:up}`;
+  konteyner `whoami=app`; 20 tablo migrate; db host portu kapalı.
+- **Frontend:** henüz uygulanmadı (proje şu an API-first backend). Frontend Dockerfile +
+  compose servisi, frontend modülü gelince eklenecek (PRAGMATİK SINIR).
+
+**Multi-tenancy (çalışan dikey dilim + hazırlık):**
+- `Tenant` modeli; `Lead.tenantId` (nullable — kademeli geçiş).
+- **Merkezi otomatik filtre:** `AsyncLocalStorage` tenant bağlamı (`TenantMiddleware`,
+  `x-tenant-id`) + Prisma `$use` ara katmanı → tenant kapsamlı modellerde create'te
+  `tenantId` otomatik atanır, okuma/güncelleme/silmede otomatik `where tenantId` enjekte
+  edilir (geliştirici elle yazmaz = sızıntı engeli). `findUnique` → `findFirst`'e çevrilir.
+- Doğrulandı (e2e): T-6.1 izolasyon, T-6.2 cross-tenant `:id` → 404, T-6.3 otomatik atama.
+- **PRAGMATİK SINIRLAR (dürüstçe):**
+  - Yalnız **Lead** kapsandı (slice). User/Invoice vb. aynı desenle kademeli eklenecek;
+    `TENANT_MODELS` set'ine eklemek + ilgili tablolara `tenantId` migration'ı yeterli.
+  - Tenant çözümleme şimdilik **`x-tenant-id` başlığı**; JWT `tenantId` claim'i + subdomain
+    ve cross-tenant token reddi (T-6.5) henüz bağlanmadı.
+  - Nested include (örn. `board` → Stage.leads) tenant filtresi uygulamaz (yalnız doğrudan
+    Lead sorguları). İkincil savunma olarak PostgreSQL **RLS** eklenmedi.
+  - Benzersizlik kısıtlarının tenant kapsamına alınması (`@@unique([tenantId, email])`) ve
+    `@@unique([tenantId, position])` gibi değişiklikler tam geçişte yapılacak.
+
+**Doğrulama:** build OK · lint temiz · birim 70/70 · e2e 52/52 (tenant izolasyonu dahil) ·
+Docker stack canlı sağlıklı.
+
 > Önceki faz: [Faz 5 — Dış Entegrasyonlar](./05-faz5-entegrasyonlar.md) · Genel: [README](./README.md)

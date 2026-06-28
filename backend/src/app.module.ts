@@ -1,6 +1,6 @@
 // src/app.module.ts
 // Kök modül: global guard (JWT), global throttler, global filter, global interceptor.
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -18,6 +18,8 @@ import { RolesModule } from './modules/roles/roles.module';
 import { LeadsModule } from './modules/leads/leads.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { HealthModule } from './modules/health/health.module';
+import { TenantMiddleware } from './common/tenant/tenant.middleware';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { IntegrationsModule } from './modules/integrations/integrations.module';
     LeadsModule,
     InvoicesModule,
     IntegrationsModule,
+    HealthModule,
   ],
   providers: [
     // Guard sırası önemli: kimlik → rol → izin (her biri bir öncekine dayanır).
@@ -55,4 +58,9 @@ import { IntegrationsModule } from './modules/integrations/integrations.module';
     { provide: APP_FILTER, useClass: AllExceptionsFilter },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  // Tenant bağlamı tüm isteklerde çözülür (başlık yoksa no-op).
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(TenantMiddleware).forRoutes('*');
+  }
+}

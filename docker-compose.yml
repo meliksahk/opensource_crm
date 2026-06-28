@@ -1,28 +1,57 @@
-# docker-compose.yml — Geliştirme için yalnızca PostgreSQL.
-# Uygulamanın tam Dockerization'ı Faz 6'da gelecek. Bu dosya yerel geliştirme/
-# test için bağımsız bir veritabanı sağlar.
-#
-# Kullanım:
-#   docker compose up -d
-#   cd backend && npx prisma migrate dev && npm run seed && npm run start:dev
+# docker-compose.yml — Prod-benzeri yığın (backend + PostgreSQL + MailHog).
+# Geliştirme (hot-reload + DB portu) için: docker-compose.dev.yml override'ı ile çalıştır:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Ortam değişkenleri için kök .env (bkz. .env.example) kullanılır.
 services:
-  postgres:
+  db:
     image: postgres:16-alpine
-    container_name: crm-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: acik_kaynak_crm
-    ports:
-      - '5432:5432'
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-acik_kaynak_crm}
     volumes:
-      - crm_pgdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d acik_kaynak_crm']
-      interval: 5s
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
+      interval: 10s
       timeout: 5s
       retries: 5
+    # Güvenlik: DB portu host'a AÇILMAZ (yalnız iç ağ). Dev override'da açılır.
+    networks: [internal]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # DB'ye servis adıyla bağlan (compose iç ağı).
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-acik_kaynak_crm}?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '3000:3000'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/api/v1/health']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks: [internal, web]
+
+  mailhog:
+    image: mailhog/mailhog
+    restart: unless-stopped
+    ports:
+      - '8025:8025' # web arayüzü (yakalanan e-postalar)
+    networks: [internal]
+
+# NOT: Frontend (Next.js) henüz uygulanmadı (proje şu an API-first backend).
+# Frontend modülü gelince buraya 'frontend' servisi + ./frontend/Dockerfile eklenecek.
 
 volumes:
-  crm_pgdata:
+  db_data:
+
+networks:
+  internal: # db + backend (dış erişim yok)
+  web: # frontend + ters proxy (ileride)

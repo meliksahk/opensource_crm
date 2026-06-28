@@ -3,7 +3,9 @@
 // İlişki (join) tabloları açıkça modellenir → ileride ek alan (atayan/tarih) eklenebilir.
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // Yerel (native) + Docker alpine (musl/openssl3) hedefleri.
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -130,6 +132,8 @@ model Lead {
   owner       User?          @relation("LeadOwner", fields: [ownerId], references: [id])
   activities  LeadActivity[]
   invoices    Invoice[]
+  // Faz 6 multi-tenancy: nullable (kademeli geçiş). Bağlam aktifse otomatik atanır/filtrelenir.
+  tenantId    String?
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   deletedAt   DateTime? // soft delete
@@ -137,6 +141,7 @@ model Lead {
   @@index([stageId, rank])
   @@index([ownerId])
   @@index([pipelineId, status])
+  @@index([tenantId])
 }
 
 model LeadActivity {
@@ -271,5 +276,15 @@ model EmailLog {
 model ProcessedWebhook {
   key       String   @id // source + delivery id
   source    String
+  createdAt DateTime @default(now())
+}
+
+// ===== Faz 6 — Multi-tenancy =====
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 }

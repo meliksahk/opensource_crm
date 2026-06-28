@@ -25,30 +25,38 @@ secure-by-default, DRY/SOLID. Detaylar: [`docs/`](./docs).
 | 3 | Satış (Lead) Modülü + Kanban | ✅ |
 | 4 | Finans & Fatura (izole yetkiler) | ✅ |
 | 5 | Dış Entegrasyonlar (Webhook, SMTP) | ✅ |
-| 6 | Dockerization + Multi-tenancy | ⏳ |
+| 6 | Dockerization + Multi-tenancy | ✅ |
 
 ## Hızlı Başlangıç (Backend)
 
-```bash
-# 1) Geliştirme veritabanını başlat (Docker)
-docker compose up -d           # PostgreSQL 16 → localhost:5432
+### Seçenek A — Tüm yığını Docker ile çalıştır (prod-benzeri)
 
-# 2) Backend
+```bash
+cp .env.example .env           # KÖK .env: POSTGRES_* + JWT secret'ları doldur
+docker compose up -d --build   # db (iç ağ) + backend (:3000) + mailhog (:8025)
+# Backend başlangıçta migration'ları otomatik uygular. Sağlık: /api/v1/health
+```
+
+### Seçenek B — Backend'i lokalde, sadece DB'yi Docker'da çalıştır
+
+```bash
+# Yalnız veritabanı (dev override DB portunu 5432'de açar)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d db
+
 cd backend
-cp .env.example .env           # değerleri doldur (JWT secret'ları vb.)
+cp .env.example .env           # DATABASE_URL → localhost:5432
 npm install
-npx prisma migrate dev         # PostgreSQL şemasını oluştur
-npm run seed                   # ADMIN rolü + admin kullanıcı
+npx prisma migrate dev         # şemayı oluştur
+npm run seed                   # ADMIN rolü + admin kullanıcı + pipeline
 npm run start:dev              # http://localhost:3000  (Swagger: /api/docs)
 ```
 
-> `.env.example` içindeki varsayılan `DATABASE_URL`, `docker compose` ile gelen
-> Postgres ile uyumludur. PostgreSQL'i kendiniz çalıştırıyorsanız `docker compose`
-> adımını atlayıp `DATABASE_URL`'i kendi sunucunuza göre güncelleyin.
+> Prod compose'da **DB portu host'a açılmaz** (yalnız iç ağ — güvenlik). Konteynerler
+> root olmayan kullanıcıyla çalışır. Sırlar `.env`'dedir; imaja gömülmez.
 
 ### Gereksinimler
-- Node.js ≥ 20
-- PostgreSQL ≥ 14 (veya `docker compose` ile gelen Postgres 16)
+- Node.js ≥ 20 · Docker + Docker Compose
+- (Lokal kurulumda) PostgreSQL ≥ 14, ya da `docker compose` ile gelen Postgres 16
 
 ## Komutlar (backend)
 
