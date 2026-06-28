@@ -15,6 +15,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { LeadsModule } from './modules/leads/leads.module';
+import { InvoicesModule } from './modules/invoices/invoices.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LeadsModule } from './modules/leads/leads.module';
     UsersModule,
     RolesModule,
     LeadsModule,
+    InvoicesModule,
   ],
   providers: [
     // Guard sırası önemli: kimlik → rol → izin (her biri bir öncekine dayanır).

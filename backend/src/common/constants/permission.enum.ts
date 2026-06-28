@@ -61,6 +61,9 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.LEAD.READ,
     PERMISSIONS.LEAD.UPDATE,
     PERMISSIONS.LEAD.MOVE,
+    // Faz 4: satışçı faturanın varlığını görür ama tutarları göremez
+    // (invoice.read_financial YOK → API'de finansal alanlar kesilir).
+    PERMISSIONS.INVOICE.READ,
   ],
   [ROLE_NAMES.FINANCE]: [
     PERMISSIONS.INVOICE.CREATE,
