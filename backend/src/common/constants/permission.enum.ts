@@ -54,6 +54,13 @@ export const PERMISSIONS = {
     UPDATE: 'contact.update',
     DELETE: 'contact.delete',
   },
+  // v2.2 — takvim/toplantı
+  MEETING: {
+    CREATE: 'meeting.create',
+    READ: 'meeting.read',
+    UPDATE: 'meeting.update',
+    DELETE: 'meeting.delete',
+  },
 } as const;
 
 // Tüm izinlerin düz listesi (seed + doğrulama için).
@@ -97,6 +104,10 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.LEAD.UPDATE,
     PERMISSIONS.LEAD.DELETE,
     PERMISSIONS.LEAD.CONVERT,
+    PERMISSIONS.MEETING.CREATE,
+    PERMISSIONS.MEETING.READ,
+    PERMISSIONS.MEETING.UPDATE,
+    PERMISSIONS.MEETING.DELETE,
   ],
   [ROLE_NAMES.SALES]: [
     PERMISSIONS.DEAL.CREATE,
@@ -108,6 +119,10 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.LEAD.READ,
     PERMISSIONS.LEAD.UPDATE,
     PERMISSIONS.LEAD.CONVERT,
+    PERMISSIONS.MEETING.CREATE,
+    PERMISSIONS.MEETING.READ,
+    PERMISSIONS.MEETING.UPDATE,
+    PERMISSIONS.MEETING.DELETE,
     // Faz 4: satışçı faturanın varlığını görür ama tutarları göremez
     // (invoice.read_financial YOK → API'de finansal alanlar kesilir).
     PERMISSIONS.INVOICE.READ,
@@ -134,5 +149,6 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.COMPANY.READ,
     PERMISSIONS.CONTACT.READ,
     PERMISSIONS.LEAD.READ,
+    PERMISSIONS.MEETING.READ,
   ],
 };

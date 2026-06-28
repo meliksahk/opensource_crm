@@ -7,6 +7,7 @@ import {
   MAIL_PROVIDER,
   MailInput,
 } from './mail-provider.interface';
+import { renderTemplate } from './mail-templates';
 
 @Injectable()
 export class MailService {
@@ -14,6 +15,16 @@ export class MailService {
     @Inject(MAIL_PROVIDER) private readonly provider: IMailProvider,
     private readonly prisma: PrismaService,
   ) {}
+
+  // Şablondan konu üretip gönderir (DRY — çağıranlar konuyu bilmek zorunda değil).
+  async sendTemplate(
+    to: string,
+    template: string,
+    context: Record<string, unknown>,
+  ): Promise<void> {
+    const { subject } = renderTemplate(template, context);
+    await this.send({ to, subject, template, context });
+  }
 
   async send(input: MailInput): Promise<void> {
     // Mail header injection engeli (CRLF) — to/subject tek satır olmalı.
