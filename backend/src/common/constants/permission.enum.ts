@@ -61,6 +61,11 @@ export const PERMISSIONS = {
     UPDATE: 'meeting.update',
     DELETE: 'meeting.delete',
   },
+  // v2.3 — otomasyon kuralları
+  AUTOMATION: {
+    READ: 'automation.read',
+    MANAGE: 'automation.manage',
+  },
 } as const;
 
 // Tüm izinlerin düz listesi (seed + doğrulama için).
@@ -108,6 +113,8 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.MEETING.READ,
     PERMISSIONS.MEETING.UPDATE,
     PERMISSIONS.MEETING.DELETE,
+    PERMISSIONS.AUTOMATION.READ,
+    PERMISSIONS.AUTOMATION.MANAGE,
   ],
   [ROLE_NAMES.SALES]: [
     PERMISSIONS.DEAL.CREATE,

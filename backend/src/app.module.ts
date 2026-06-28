@@ -23,6 +23,7 @@ import { HealthModule } from './modules/health/health.module';
 import { CompaniesModule } from './modules/companies/companies.module';
 import { ContactsModule } from './modules/contacts/contacts.module';
 import { MeetingsModule } from './modules/meetings/meetings.module';
+import { AutomationModule } from './modules/automation/automation.module';
 import { TenantMiddleware } from './common/tenant/tenant.middleware';
 
 @Module({
@@ -54,6 +55,7 @@ import { TenantMiddleware } from './common/tenant/tenant.middleware';
     CompaniesModule,
     ContactsModule,
     MeetingsModule,
+    AutomationModule,
   ],
   providers: [
     // Guard sırası önemli: kimlik → rol → izin (her biri bir öncekine dayanır).

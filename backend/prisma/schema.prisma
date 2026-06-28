@@ -384,3 +384,21 @@ model Meeting {
   @@index([startsAt])
   @@index([tenantId])
 }
+
+// ===== v2.3 — Otomasyon kuralları =====
+
+model AutomationRule {
+  id          String   @id @default(uuid())
+  name        String
+  trigger     String // 'deal.created' | 'deal.moved' | 'lead.created' | 'invoice.paid' | 'invoice.issued'
+  conditions  Json? // { field, equals }
+  actions     Json // [{ type, ... }]
+  isActive    Boolean  @default(true)
+  createdById String?
+  tenantId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([trigger, isActive])
+  @@index([tenantId])
+}
