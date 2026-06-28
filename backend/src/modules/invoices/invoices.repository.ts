@@ -18,7 +18,7 @@ export class InvoicesRepository {
 
   create(
     scalars: {
-      leadId?: string;
+      dealId?: string;
       customerName: string;
       customerEmail?: string;
       currency: string;

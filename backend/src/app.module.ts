@@ -15,7 +15,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { LeadsModule } from './modules/leads/leads.module';
+import { DealsModule } from './modules/deals/deals.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { HealthModule } from './modules/health/health.module';
@@ -44,7 +44,7 @@ import { TenantMiddleware } from './common/tenant/tenant.middleware';
     AuthModule,
     UsersModule,
     RolesModule,
-    LeadsModule,
+    DealsModule,
     InvoicesModule,
     IntegrationsModule,
     HealthModule,

@@ -1,4 +1,4 @@
-// src/components/organisms/LeadsBoard.tsx — Kanban panosu (stage sütunları + lead kartları).
+// src/components/organisms/DealsBoard.tsx — Kanban panosu (stage sütunları + deal kartları).
 import { Badge } from '../atoms/Badge';
 import type { Board } from '@/types';
 
@@ -8,7 +8,7 @@ function stageTone(stage: { isWon: boolean; isLost: boolean }) {
   return 'blue' as const;
 }
 
-export function LeadsBoard({ board }: { board: Board }) {
+export function DealsBoard({ board }: { board: Board }) {
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
       {board.stages.map((stage) => (
@@ -17,28 +17,28 @@ export function LeadsBoard({ board }: { board: Board }) {
             <h3 className="text-sm font-semibold text-gray-700">
               {stage.name}
             </h3>
-            <Badge tone={stageTone(stage)}>{stage.leads.length}</Badge>
+            <Badge tone={stageTone(stage)}>{stage.deals.length}</Badge>
           </div>
           <div className="space-y-2">
-            {stage.leads.map((lead) => (
+            {stage.deals.map((deal) => (
               <div
-                key={lead.id}
+                key={deal.id}
                 className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
               >
                 <p className="text-sm font-medium text-gray-900">
-                  {lead.title}
+                  {deal.title}
                 </p>
-                {lead.company && (
-                  <p className="text-xs text-gray-500">{lead.company}</p>
+                {deal.company && (
+                  <p className="text-xs text-gray-500">{deal.company}</p>
                 )}
-                {lead.value && (
+                {deal.value && (
                   <p className="mt-1 text-xs font-medium text-brand-700">
-                    {lead.value} {lead.currency}
+                    {deal.value} {deal.currency}
                   </p>
                 )}
               </div>
             ))}
-            {stage.leads.length === 0 && (
+            {stage.deals.length === 0 && (
               <p className="rounded-lg border border-dashed border-gray-200 p-3 text-center text-xs text-gray-400">
                 boş
               </p>

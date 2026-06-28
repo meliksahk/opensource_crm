@@ -1,4 +1,4 @@
-// src/modules/leads/dto/create-lead.dto.ts
+// src/modules/deals/dto/create-deal.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
@@ -11,7 +11,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateLeadDto {
+export class CreateDealDto {
   @ApiProperty()
   @IsUUID('4')
   pipelineId: string;

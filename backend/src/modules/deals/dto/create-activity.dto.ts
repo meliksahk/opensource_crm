@@ -1,4 +1,4 @@
-// src/modules/leads/dto/create-activity.dto.ts
+// src/modules/deals/dto/create-activity.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsIn,

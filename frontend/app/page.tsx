@@ -15,10 +15,10 @@ async function total(path: string): Promise<number> {
 export default function DashboardHome() {
   const { can } = useAuth();
 
-  const leads = useQuery({
-    queryKey: ['count', 'leads'],
-    queryFn: () => total('/leads'),
-    enabled: can('lead.read'),
+  const deals = useQuery({
+    queryKey: ['count', 'deals'],
+    queryFn: () => total('/deals'),
+    enabled: can('deal.read'),
   });
   const invoices = useQuery({
     queryKey: ['count', 'invoices'],
@@ -34,10 +34,10 @@ export default function DashboardHome() {
   return (
     <DashboardTemplate title="Panel">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {can('lead.read') && (
+        {can('deal.read') && (
           <StatCard
-            label="Lead"
-            value={leads.isLoading ? '…' : (leads.data ?? 0)}
+            label="Deal"
+            value={deals.isLoading ? '…' : (deals.data ?? 0)}
             hint="Toplam satış fırsatı"
           />
         )}
@@ -56,7 +56,7 @@ export default function DashboardHome() {
           />
         )}
       </div>
-      {!can('lead.read') && !can('invoice.read') && !can('user.read') && (
+      {!can('deal.read') && !can('invoice.read') && !can('user.read') && (
         <p className="text-sm text-gray-500">
           Görüntülenecek modül yetkiniz yok.
         </p>

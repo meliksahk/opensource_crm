@@ -1,11 +1,11 @@
-// src/modules/leads/leads.repository.ts
+// src/modules/deals/deals.repository.ts
 // VERİ ERİŞİMİ: Prisma çağrıları YALNIZCA burada. Move tek transaction (atomiklik).
 import { Injectable } from '@nestjs/common';
-import { LeadStatus, Prisma } from '@prisma/client';
+import { DealStatus, Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class LeadsRepository {
+export class DealsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   getStage(id: string) {
@@ -20,31 +20,31 @@ export class LeadsRepository {
     return this.prisma.user.findUnique({ where: { id }, select: { id: true } });
   }
 
-  // Silinmemiş lead.
-  getLead(id: string) {
-    return this.prisma.lead.findFirst({
+  // Silinmemiş deal.
+  getDeal(id: string) {
+    return this.prisma.deal.findFirst({
       where: { id, deletedAt: null },
       include: { stage: true, owner: { select: { id: true } } },
     });
   }
 
   async maxRankInStage(stageId: string): Promise<number | null> {
-    const res = await this.prisma.lead.aggregate({
+    const res = await this.prisma.deal.aggregate({
       where: { stageId, deletedAt: null },
       _max: { rank: true },
     });
     return res._max.rank ? Number(res._max.rank) : null;
   }
 
-  create(data: Prisma.LeadCreateInput) {
-    return this.prisma.lead.create({
+  create(data: Prisma.DealCreateInput) {
+    return this.prisma.deal.create({
       data,
       include: { stage: true, owner: { select: { id: true } } },
     });
   }
 
-  update(id: string, data: Prisma.LeadUpdateInput) {
-    return this.prisma.lead.update({
+  update(id: string, data: Prisma.DealUpdateInput) {
+    return this.prisma.deal.update({
       where: { id },
       data,
       include: { stage: true, owner: { select: { id: true } } },
@@ -52,14 +52,14 @@ export class LeadsRepository {
   }
 
   softDelete(id: string) {
-    return this.prisma.lead.update({
+    return this.prisma.deal.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
   }
 
   setOwner(id: string, ownerId: string | null) {
-    return this.prisma.lead.update({
+    return this.prisma.deal.update({
       where: { id },
       data: { ownerId },
       include: { stage: true, owner: { select: { id: true } } },
@@ -71,12 +71,12 @@ export class LeadsRepository {
     id: string;
     toStageId: string;
     rank: number;
-    status: LeadStatus;
+    status: DealStatus;
     fromStageId: string;
     userId: string;
   }) {
-    const [lead] = await this.prisma.$transaction([
-      this.prisma.lead.update({
+    const [deal] = await this.prisma.$transaction([
+      this.prisma.deal.update({
         where: { id: params.id },
         data: {
           stageId: params.toStageId,
@@ -85,16 +85,16 @@ export class LeadsRepository {
         },
         include: { stage: true, owner: { select: { id: true } } },
       }),
-      this.prisma.leadActivity.create({
+      this.prisma.dealActivity.create({
         data: {
-          leadId: params.id,
+          dealId: params.id,
           userId: params.userId,
           type: 'STAGE_CHANGE',
           payload: { from: params.fromStageId, to: params.toStageId },
         },
       }),
     ]);
-    return lead;
+    return deal;
   }
 
   board(pipelineId: string) {
@@ -102,7 +102,7 @@ export class LeadsRepository {
       where: { pipelineId },
       orderBy: { position: 'asc' },
       include: {
-        leads: {
+        deals: {
           where: { deletedAt: null },
           orderBy: { rank: 'asc' },
         },
@@ -110,34 +110,34 @@ export class LeadsRepository {
     });
   }
 
-  async list(where: Prisma.LeadWhereInput, skip: number, take: number) {
+  async list(where: Prisma.DealWhereInput, skip: number, take: number) {
     const [items, total] = await this.prisma.$transaction([
-      this.prisma.lead.findMany({
+      this.prisma.deal.findMany({
         where,
         skip,
         take,
         orderBy: [{ stageId: 'asc' }, { rank: 'asc' }],
         include: { stage: true, owner: { select: { id: true } } },
       }),
-      this.prisma.lead.count({ where }),
+      this.prisma.deal.count({ where }),
     ]);
     return { items, total };
   }
 
   addActivity(
-    leadId: string,
+    dealId: string,
     userId: string,
     type: string,
     payload: Prisma.InputJsonValue | undefined,
   ) {
-    return this.prisma.leadActivity.create({
-      data: { leadId, userId, type, payload },
+    return this.prisma.dealActivity.create({
+      data: { dealId, userId, type, payload },
     });
   }
 
-  getActivities(leadId: string) {
-    return this.prisma.leadActivity.findMany({
-      where: { leadId },
+  getActivities(dealId: string) {
+    return this.prisma.dealActivity.findMany({
+      where: { dealId },
       orderBy: { createdAt: 'desc' },
     });
   }

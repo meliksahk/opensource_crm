@@ -13,14 +13,14 @@ export class WebhookEventHandler {
     private readonly dispatcher: WebhookDispatcherService,
   ) {}
 
-  @OnEvent('lead.created')
+  @OnEvent('deal.created')
   onLeadCreated(payload: Record<string, unknown>) {
-    return this.dispatchEvent('lead.created', payload);
+    return this.dispatchEvent('deal.created', payload);
   }
 
-  @OnEvent('lead.moved')
+  @OnEvent('deal.moved')
   onLeadMoved(payload: Record<string, unknown>) {
-    return this.dispatchEvent('lead.moved', payload);
+    return this.dispatchEvent('deal.moved', payload);
   }
 
   @OnEvent('invoice.issued')

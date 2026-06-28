@@ -65,7 +65,7 @@ describe('WebhookDispatcherService', () => {
   // C-5.1 — timeout/throw → FAILED (sistem bloklanmaz)
   it('network/timeout hatası → FAILED', async () => {
     http.post.mockRejectedValue(new Error('aborted'));
-    const res = await dispatcher.dispatch(sub, 'lead.created', { id: 'x' });
+    const res = await dispatcher.dispatch(sub, 'deal.created', { id: 'x' });
     expect(res.status).toBe(DeliveryStatus.FAILED);
     expect(res.lastError).toContain('aborted');
   });

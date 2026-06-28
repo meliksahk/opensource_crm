@@ -1,4 +1,4 @@
-// src/modules/leads/rank.util.ts
+// src/modules/deals/rank.util.ts
 // Kanban kesirli sıralama (fractional ranking). Saf fonksiyon → kolay test edilir.
 // before = taşınan kartın ÜSTÜNDE kalacak kartın rank'i (yoksa null)
 // after  = taşınan kartın ALTINDA kalacak kartın rank'i (yoksa null)

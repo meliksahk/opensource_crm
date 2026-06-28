@@ -105,7 +105,7 @@ describe('Integrations / Webhooks (e2e)', () => {
       .set(auth(adminToken))
       .send({
         url: `https://example.com/wh_${ts}`,
-        events: ['invoice.paid', 'lead.created'],
+        events: ['invoice.paid', 'deal.created'],
       })
       .expect(201);
     webhookId = r.body.data.id;
@@ -128,7 +128,7 @@ describe('Integrations / Webhooks (e2e)', () => {
     request(app.getHttpServer())
       .post(`${base}/integrations/webhooks`)
       .set(auth(salesToken))
-      .send({ url: `https://example.com/wh_${ts}_x`, events: ['lead.created'] })
+      .send({ url: `https://example.com/wh_${ts}_x`, events: ['deal.created'] })
       .expect(403));
 
   // E-5.3 — http reddedilir (yalnız HTTPS)
@@ -138,7 +138,7 @@ describe('Integrations / Webhooks (e2e)', () => {
       .set(auth(adminToken))
       .send({
         url: `http://example.com/wh_${ts}_insecure`,
-        events: ['lead.created'],
+        events: ['deal.created'],
       })
       .expect(400));
 
@@ -149,7 +149,7 @@ describe('Integrations / Webhooks (e2e)', () => {
       .set(auth(adminToken))
       .send({
         url: 'https://169.254.169.254/latest',
-        events: ['lead.created'],
+        events: ['deal.created'],
       })
       .expect(400));
 

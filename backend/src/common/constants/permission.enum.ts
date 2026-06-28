@@ -15,12 +15,12 @@ export const PERMISSIONS = {
     DELETE: 'role.delete',
     ASSIGN: 'role.assign',
   },
-  LEAD: {
-    CREATE: 'lead.create',
-    READ: 'lead.read',
-    UPDATE: 'lead.update',
-    DELETE: 'lead.delete',
-    MOVE: 'lead.move',
+  DEAL: {
+    CREATE: 'deal.create',
+    READ: 'deal.read',
+    UPDATE: 'deal.update',
+    DELETE: 'deal.delete',
+    MOVE: 'deal.move',
   },
   INVOICE: {
     CREATE: 'invoice.create',
@@ -66,11 +66,11 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
   [ROLE_NAMES.ADMIN]: ALL_PERMISSIONS, // tüm izinler
   [ROLE_NAMES.MANAGER]: [
     PERMISSIONS.USER.READ,
-    PERMISSIONS.LEAD.CREATE,
-    PERMISSIONS.LEAD.READ,
-    PERMISSIONS.LEAD.UPDATE,
-    PERMISSIONS.LEAD.DELETE,
-    PERMISSIONS.LEAD.MOVE,
+    PERMISSIONS.DEAL.CREATE,
+    PERMISSIONS.DEAL.READ,
+    PERMISSIONS.DEAL.UPDATE,
+    PERMISSIONS.DEAL.DELETE,
+    PERMISSIONS.DEAL.MOVE,
     PERMISSIONS.INVOICE.READ,
     // Faz 5: entegrasyon yönetimi yalnız ADMIN/MANAGER.
     PERMISSIONS.INTEGRATION.READ,
@@ -86,10 +86,10 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.CONTACT.DELETE,
   ],
   [ROLE_NAMES.SALES]: [
-    PERMISSIONS.LEAD.CREATE,
-    PERMISSIONS.LEAD.READ,
-    PERMISSIONS.LEAD.UPDATE,
-    PERMISSIONS.LEAD.MOVE,
+    PERMISSIONS.DEAL.CREATE,
+    PERMISSIONS.DEAL.READ,
+    PERMISSIONS.DEAL.UPDATE,
+    PERMISSIONS.DEAL.MOVE,
     // Faz 4: satışçı faturanın varlığını görür ama tutarları göremez
     // (invoice.read_financial YOK → API'de finansal alanlar kesilir).
     PERMISSIONS.INVOICE.READ,
@@ -111,7 +111,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
   [ROLE_NAMES.VIEWER]: [
     PERMISSIONS.USER.READ,
     PERMISSIONS.ROLE.READ,
-    PERMISSIONS.LEAD.READ,
+    PERMISSIONS.DEAL.READ,
     PERMISSIONS.INVOICE.READ,
     PERMISSIONS.COMPANY.READ,
     PERMISSIONS.CONTACT.READ,

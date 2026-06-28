@@ -1,9 +1,9 @@
-// src/modules/leads/leads.service.spec.ts
+// src/modules/deals/deals.service.spec.ts
 import { BadRequestException } from '@nestjs/common';
-import { LeadStatus, Prisma } from '@prisma/client';
+import { DealStatus, Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { LeadsService } from './leads.service';
-import { LeadsRepository } from './leads.repository';
+import { DealsService } from './deals.service';
+import { DealsRepository } from './deals.repository';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 
 const admin: AuthenticatedUser = {
@@ -13,11 +13,11 @@ const admin: AuthenticatedUser = {
   permissions: [],
 };
 
-const leadRecord = (over: Record<string, unknown> = {}) => ({
+const dealRecord = (over: Record<string, unknown> = {}) => ({
   id: 'l-1',
   pipelineId: 'p-1',
   stageId: 's-1',
-  title: 'Lead',
+  title: 'Deal',
   contactName: null,
   email: null,
   phone: null,
@@ -26,22 +26,22 @@ const leadRecord = (over: Record<string, unknown> = {}) => ({
   currency: 'TRY',
   rank: new Prisma.Decimal(1),
   ownerId: 'actor-1',
-  status: LeadStatus.OPEN,
+  status: DealStatus.OPEN,
   createdAt: new Date(),
   updatedAt: new Date(),
   ...over,
 });
 
-describe('LeadsService', () => {
-  let service: LeadsService;
-  let repo: { [k in keyof LeadsRepository]: jest.Mock };
+describe('DealsService', () => {
+  let service: DealsService;
+  let repo: { [k in keyof DealsRepository]: jest.Mock };
 
   beforeEach(() => {
     repo = {
       getStage: jest.fn(),
       getPipeline: jest.fn(),
       userExists: jest.fn(),
-      getLead: jest.fn(),
+      getDeal: jest.fn(),
       maxRankInStage: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -54,7 +54,7 @@ describe('LeadsService', () => {
       getActivities: jest.fn(),
     } as unknown as typeof repo;
     const events = { emit: jest.fn() } as unknown as EventEmitter2;
-    service = new LeadsService(repo as unknown as LeadsRepository, events);
+    service = new DealsService(repo as unknown as DealsRepository, events);
   });
 
   // U-3.5
@@ -77,7 +77,7 @@ describe('LeadsService', () => {
     repo.getStage.mockResolvedValue({ id: 's-1', pipelineId: 'p-1' });
     repo.maxRankInStage.mockResolvedValue(null);
     repo.create.mockResolvedValue(
-      leadRecord({ value: new Prisma.Decimal('12000.10') }),
+      dealRecord({ value: new Prisma.Decimal('12000.10') }),
     );
     const res = await service.create(
       { pipelineId: 'p-1', stageId: 's-1', title: 'X', value: '12000.10' },
@@ -89,7 +89,7 @@ describe('LeadsService', () => {
 
   // U-3.3 — cross-pipeline move
   it("move: farklı pipeline stage'ine taşıma BadRequest", async () => {
-    repo.getLead.mockResolvedValue(leadRecord());
+    repo.getDeal.mockResolvedValue(dealRecord());
     repo.getStage.mockResolvedValue({
       id: 's-2',
       pipelineId: 'OTHER',
@@ -103,7 +103,7 @@ describe('LeadsService', () => {
 
   // U-3.4 — isWon stage → status WON + applyMove çağrısı
   it('move: isWon stage → status WON ve STAGE_CHANGE (applyMove) çağrılır', async () => {
-    repo.getLead.mockResolvedValue(leadRecord());
+    repo.getDeal.mockResolvedValue(dealRecord());
     repo.getStage.mockResolvedValue({
       id: 's-won',
       pipelineId: 'p-1',
@@ -112,9 +112,9 @@ describe('LeadsService', () => {
     });
     repo.maxRankInStage.mockResolvedValue(5);
     repo.applyMove.mockResolvedValue(
-      leadRecord({
+      dealRecord({
         stageId: 's-won',
-        status: LeadStatus.WON,
+        status: DealStatus.WON,
         rank: new Prisma.Decimal(6),
       }),
     );
@@ -124,18 +124,18 @@ describe('LeadsService', () => {
     expect(repo.applyMove).toHaveBeenCalledWith(
       expect.objectContaining({
         toStageId: 's-won',
-        status: LeadStatus.WON,
+        status: DealStatus.WON,
         fromStageId: 's-1',
         userId: 'actor-1',
       }),
     );
-    expect(res.status).toBe(LeadStatus.WON);
+    expect(res.status).toBe(DealStatus.WON);
   });
 
   it("move: komşu kart farklı stage'de ise BadRequest (IDOR/tutarlılık)", async () => {
-    repo.getLead
-      .mockResolvedValueOnce(leadRecord()) // taşınan lead
-      .mockResolvedValueOnce(leadRecord({ id: 'nb', stageId: 'WRONG' })); // komşu
+    repo.getDeal
+      .mockResolvedValueOnce(dealRecord()) // taşınan deal
+      .mockResolvedValueOnce(dealRecord({ id: 'nb', stageId: 'WRONG' })); // komşu
     repo.getStage.mockResolvedValue({
       id: 's-2',
       pipelineId: 'p-1',
@@ -143,7 +143,7 @@ describe('LeadsService', () => {
       isLost: false,
     });
     await expect(
-      service.move('l-1', { toStageId: 's-2', beforeLeadId: 'nb' }, admin),
+      service.move('l-1', { toStageId: 's-2', beforeDealId: 'nb' }, admin),
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 });

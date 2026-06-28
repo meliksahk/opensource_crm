@@ -41,14 +41,14 @@ async function main() {
     userIdByRole[u.role] = user.id;
   }
 
-  // 2) Örnek lead'ler (varsayılan pipeline) — yalnız hiç yoksa oluştur.
+  // 2) Örnek deal'ler (varsayılan pipeline) — yalnız hiç yoksa oluştur.
   const pipeline = await prisma.pipeline.findFirst({
     where: { isDefault: true },
     include: { stages: { orderBy: { position: 'asc' } } },
   });
   const salesId = userIdByRole['SALES'];
   if (pipeline && salesId) {
-    const existing = await prisma.lead.count({
+    const existing = await prisma.deal.count({
       where: { pipelineId: pipeline.id, deletedAt: null },
     });
     if (existing === 0) {
@@ -61,7 +61,7 @@ async function main() {
       ];
       let rank = 1;
       for (const s of samples) {
-        await prisma.lead.create({
+        await prisma.deal.create({
           data: {
             pipelineId: pipeline.id,
             stageId: pipeline.stages[s.stage].id,

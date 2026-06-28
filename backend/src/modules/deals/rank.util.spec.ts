@@ -1,4 +1,4 @@
-// src/modules/leads/rank.util.spec.ts
+// src/modules/deals/rank.util.spec.ts
 import { computeRank, needsRebalance } from './rank.util';
 
 describe('computeRank', () => {

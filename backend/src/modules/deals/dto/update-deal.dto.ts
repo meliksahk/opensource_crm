@@ -1,4 +1,4 @@
-// src/modules/leads/dto/update-lead.dto.ts
+// src/modules/deals/dto/update-deal.dto.ts
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 
 // Yalnız alan güncelleme. Aşama/sıra değişimi (move) ve sahip atama (assign) AYRI uçlardan.
-export class UpdateLeadDto {
+export class UpdateDealDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

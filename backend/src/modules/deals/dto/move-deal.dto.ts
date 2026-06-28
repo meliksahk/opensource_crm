@@ -1,8 +1,8 @@
-// src/modules/leads/dto/move-lead.dto.ts
+// src/modules/deals/dto/move-deal.dto.ts
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsUUID } from 'class-validator';
 
-export class MoveLeadDto {
+export class MoveDealDto {
   @ApiProperty()
   @IsUUID('4')
   toStageId: string;
@@ -11,11 +11,11 @@ export class MoveLeadDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4')
-  beforeLeadId?: string;
+  beforeDealId?: string;
 
   // Taşınan kartın ALTINDA kalacak kart (yoksa sütun sonu).
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4')
-  afterLeadId?: string;
+  afterDealId?: string;
 }

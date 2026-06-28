@@ -11,7 +11,7 @@ export interface LoginResponse {
   user: { id: string; email: string; roles: string[] };
 }
 
-export interface Lead {
+export interface Deal {
   id: string;
   title: string;
   contactName: string | null;
@@ -29,7 +29,7 @@ export interface BoardStage {
   position: number;
   isWon: boolean;
   isLost: boolean;
-  leads: Lead[];
+  deals: Deal[];
 }
 
 export interface Board {

@@ -5,7 +5,7 @@ import { ALL_PERMISSIONS } from '../../../common/constants/permission.enum';
 
 export class AssignPermissionsDto {
   // Rolün yeni izin listesi (tam liste — mevcut izinler bununla değiştirilir).
-  @ApiProperty({ type: [String], example: ['lead.read', 'lead.create'] })
+  @ApiProperty({ type: [String], example: ['deal.read', 'deal.create'] })
   @IsArray()
   @IsIn(ALL_PERMISSIONS, { each: true })
   permissions: string[];

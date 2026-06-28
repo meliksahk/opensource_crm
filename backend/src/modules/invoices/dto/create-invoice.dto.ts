@@ -35,7 +35,7 @@ export class CreateInvoiceDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4')
-  leadId?: string;
+  dealId?: string;
 
   @ApiProperty()
   @IsString()

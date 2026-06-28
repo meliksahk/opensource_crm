@@ -40,7 +40,7 @@ export class InvoicesService {
 
     const invoice = await this.repo.create(
       {
-        leadId: dto.leadId,
+        dealId: dto.dealId,
         customerName: dto.customerName,
         customerEmail: dto.customerEmail,
         currency: dto.currency ?? 'TRY',
@@ -223,7 +223,7 @@ export class InvoicesService {
     const base = {
       id: invoice.id,
       number: invoice.number,
-      leadId: invoice.leadId,
+      dealId: invoice.dealId,
       customerName: invoice.customerName,
       customerEmail: invoice.customerEmail,
       status: invoice.status,

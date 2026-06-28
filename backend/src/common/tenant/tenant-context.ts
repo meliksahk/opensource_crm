@@ -18,10 +18,10 @@ export function getCurrentTenantId(): string | null {
 }
 
 // Tenant kapsamına alınan modeller (otomatik filtre uygulanır).
-// Lead + Invoice kapsanıyor. User auth (global e-posta sorgusu) nedeniyle hariç —
+// Deal + Invoice kapsanıyor. User auth (global e-posta sorgusu) nedeniyle hariç —
 // kademeli geçişte ayrı ele alınır (docs/06 §10).
 export const TENANT_MODELS = new Set<string>([
-  'Lead',
+  'Deal',
   'Invoice',
   'Company',
   'Contact',

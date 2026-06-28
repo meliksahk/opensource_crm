@@ -30,7 +30,7 @@ const sales: AuthenticatedUser = {
 const invoiceRecord = (over: Record<string, unknown> = {}) => ({
   id: 'inv-1',
   number: null as string | null,
-  leadId: null as string | null,
+  dealId: null as string | null,
   customerName: 'ACME',
   customerEmail: null as string | null,
   status: InvoiceStatus.DRAFT,

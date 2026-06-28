@@ -22,7 +22,7 @@ model User {
   isActive      Boolean        @default(true)
   roles         UserRole[]
   refreshTokens RefreshToken[]
-  ownedLeads    Lead[]         @relation("LeadOwner")
+  ownedDeals    Deal[]         @relation("DealOwner")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -41,7 +41,7 @@ model Role {
 
 model Permission {
   id          String           @id @default(uuid())
-  // "kaynak.eylem" biçimi — örn: "lead.create", "invoice.read"
+  // "kaynak.eylem" biçimi — örn: "deal.create", "invoice.read"
   action      String           @unique
   description String?
   roles       RolePermission[]
@@ -80,14 +80,14 @@ model RefreshToken {
   @@index([userId])
 }
 
-// ===== Faz 3 — Satış (Lead) & Kanban =====
+// ===== Faz 3 — Satış (Deal) & Kanban =====
 
 model Pipeline {
   id        String   @id @default(uuid())
   name      String
   isDefault Boolean  @default(false)
   stages    Stage[]
-  leads     Lead[]
+  deals     Deal[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -100,19 +100,19 @@ model Stage {
   isWon      Boolean  @default(false)
   isLost     Boolean  @default(false)
   pipeline   Pipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
-  leads      Lead[]
+  deals      Deal[]
 
   @@unique([pipelineId, position])
   @@index([pipelineId])
 }
 
-enum LeadStatus {
+enum DealStatus {
   OPEN
   WON
   LOST
 }
 
-model Lead {
+model Deal {
   id          String         @id @default(uuid())
   pipelineId  String
   stageId     String
@@ -126,11 +126,14 @@ model Lead {
   // Kanban içi sıralama — kesirli rank (çakışmasız taşıma için)
   rank        Decimal        @db.Decimal(30, 15)
   ownerId     String? // atanan satış temsilcisi
-  status      LeadStatus     @default(OPEN)
+  // v2.1: Deal artık Contact/Company'ye bağlanır (nullable — kademeli geçiş).
+  contactId   String?
+  companyId   String?
+  status      DealStatus     @default(OPEN)
   pipeline    Pipeline       @relation(fields: [pipelineId], references: [id])
   stage       Stage          @relation(fields: [stageId], references: [id])
-  owner       User?          @relation("LeadOwner", fields: [ownerId], references: [id])
-  activities  LeadActivity[]
+  owner       User?          @relation("DealOwner", fields: [ownerId], references: [id])
+  activities  DealActivity[]
   invoices    Invoice[]
   // Faz 6 multi-tenancy: nullable (kademeli geçiş). Bağlam aktifse otomatik atanır/filtrelenir.
   tenantId    String?
@@ -142,18 +145,20 @@ model Lead {
   @@index([ownerId])
   @@index([pipelineId, status])
   @@index([tenantId])
+  @@index([contactId])
+  @@index([companyId])
 }
 
-model LeadActivity {
+model DealActivity {
   id        String   @id @default(uuid())
-  leadId    String
+  dealId    String
   userId    String
   type      String // NOTE, STAGE_CHANGE, CALL, EMAIL
   payload   Json? // {from, to} vb.
   createdAt DateTime @default(now())
-  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  deal      Deal     @relation(fields: [dealId], references: [id], onDelete: Cascade)
 
-  @@index([leadId, createdAt])
+  @@index([dealId, createdAt])
 }
 
 // ===== Faz 4 — Finans & Fatura =====
@@ -170,7 +175,7 @@ enum InvoiceStatus {
 model Invoice {
   id            String            @id @default(uuid())
   number        String?           @unique // INV-2026-000123 (issue'da atanır; sıralı, atlamasız)
-  leadId        String?
+  dealId        String?
   customerName  String
   customerEmail String?
   status        InvoiceStatus     @default(DRAFT)
@@ -182,7 +187,7 @@ model Invoice {
   amountPaid    Decimal           @default(0) @db.Decimal(14, 2)
   issuedAt      DateTime?
   dueAt         DateTime?
-  lead          Lead?             @relation(fields: [leadId], references: [id])
+  deal          Deal?             @relation(fields: [dealId], references: [id])
   lineItems     InvoiceLineItem[]
   payments      Payment[]
   createdById   String
@@ -191,7 +196,7 @@ model Invoice {
   updatedAt     DateTime          @updatedAt
 
   @@index([status])
-  @@index([leadId])
+  @@index([dealId])
   @@index([dueAt])
   @@index([tenantId])
 }
@@ -239,7 +244,7 @@ enum DeliveryStatus {
 model WebhookSubscription {
   id          String            @id @default(uuid())
   url         String
-  events      String[] // ["lead.created","invoice.paid"]
+  events      String[] // ["deal.created","invoice.paid"]
   secret      String // HMAC imza anahtarı (yalnız oluşturmada döner; sonra gizli)
   isActive    Boolean           @default(true)
   createdById String

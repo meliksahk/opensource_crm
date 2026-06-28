@@ -1,5 +1,5 @@
-// src/modules/leads/leads.service.ts
-// İŞ MANTIĞI: Lead CRUD, Kanban board, atomik move (rank), sahiplik tabanlı erişim.
+// src/modules/deals/deals.service.ts
+// İŞ MANTIĞI: Deal CRUD, Kanban board, atomik move (rank), sahiplik tabanlı erişim.
 import {
   BadRequestException,
   ForbiddenException,
@@ -7,23 +7,23 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { LeadStatus, Prisma } from '@prisma/client';
+import { DealStatus, Prisma } from '@prisma/client';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ROLE_NAMES } from '../../common/constants/permission.enum';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
-import { LeadsRepository } from './leads.repository';
+import { DealsRepository } from './deals.repository';
 import { computeRank, RANK_GAP } from './rank.util';
-import { CreateLeadDto } from './dto/create-lead.dto';
-import { UpdateLeadDto } from './dto/update-lead.dto';
-import { MoveLeadDto } from './dto/move-lead.dto';
-import { AssignLeadDto } from './dto/assign-lead.dto';
+import { CreateDealDto } from './dto/create-deal.dto';
+import { UpdateDealDto } from './dto/update-deal.dto';
+import { MoveDealDto } from './dto/move-deal.dto';
+import { AssignDealDto } from './dto/assign-deal.dto';
 import { CreateActivityDto } from './dto/create-activity.dto';
-import { QueryLeadDto } from './dto/query-lead.dto';
+import { QueryDealDto } from './dto/query-deal.dto';
 
-// Tüm lead'lere yazabilen roller (sahiplikten bağımsız).
+// Tüm deal'lere yazabilen roller (sahiplikten bağımsız).
 const MANAGE_ALL_ROLES: string[] = [ROLE_NAMES.ADMIN, ROLE_NAMES.MANAGER];
 
-interface LeadRecord {
+interface DealRecord {
   id: string;
   pipelineId: string;
   stageId: string;
@@ -36,21 +36,21 @@ interface LeadRecord {
   currency: string;
   rank: Prisma.Decimal;
   ownerId: string | null;
-  status: LeadStatus;
+  status: DealStatus;
   createdAt: Date;
   updatedAt: Date;
 }
 
 @Injectable()
-export class LeadsService {
-  private readonly logger = new Logger(LeadsService.name);
+export class DealsService {
+  private readonly logger = new Logger(DealsService.name);
 
   constructor(
-    private readonly repo: LeadsRepository,
+    private readonly repo: DealsRepository,
     private readonly events: EventEmitter2,
   ) {}
 
-  async create(dto: CreateLeadDto, actor: AuthenticatedUser) {
+  async create(dto: CreateDealDto, actor: AuthenticatedUser) {
     const stage = await this.repo.getStage(dto.stageId);
     if (!stage) {
       throw new BadRequestException('Geçersiz stageId.');
@@ -73,20 +73,20 @@ export class LeadsService {
       value: dto.value ?? null,
       currency: dto.currency ?? 'TRY',
       rank,
-      status: LeadStatus.OPEN,
+      status: DealStatus.OPEN,
       pipeline: { connect: { id: dto.pipelineId } },
       stage: { connect: { id: dto.stageId } },
       // Oluşturan kullanıcı varsayılan sahip olur.
       owner: { connect: { id: actor.id } },
     });
-    this.logger.log(`lead.create by=${actor.id} lead=${created.id}`);
+    this.logger.log(`deal.create by=${actor.id} deal=${created.id}`);
     // Domain olayı yay (entegrasyon handler'ları dinler — gevşek bağlılık).
-    this.events.emit('lead.created', {
-      leadId: created.id,
+    this.events.emit('deal.created', {
+      dealId: created.id,
       title: created.title,
       pipelineId: created.pipelineId,
     });
-    return this.toView(created as LeadRecord);
+    return this.toView(created as DealRecord);
   }
 
   async findBoard(pipelineId: string) {
@@ -103,16 +103,16 @@ export class LeadsService {
         position: s.position,
         isWon: s.isWon,
         isLost: s.isLost,
-        leads: s.leads.map((l) => this.toView(l as LeadRecord)),
+        deals: s.deals.map((l) => this.toView(l as DealRecord)),
       })),
     };
   }
 
-  async findAll(q: QueryLeadDto) {
-    const where: Prisma.LeadWhereInput = { deletedAt: null };
+  async findAll(q: QueryDealDto) {
+    const where: Prisma.DealWhereInput = { deletedAt: null };
     if (q.pipelineId) where.pipelineId = q.pipelineId;
     if (q.stageId) where.stageId = q.stageId;
-    if (q.status) where.status = q.status as LeadStatus;
+    if (q.status) where.status = q.status as DealStatus;
     if (q.q) {
       // Prisma parametrik → injection yok.
       where.OR = [
@@ -123,20 +123,20 @@ export class LeadsService {
     }
     const { items, total } = await this.repo.list(where, q.skip, q.limit);
     return {
-      data: (items as LeadRecord[]).map((l) => this.toView(l)),
+      data: (items as DealRecord[]).map((l) => this.toView(l)),
       meta: { page: q.page, limit: q.limit, total },
     };
   }
 
   async findOne(id: string) {
-    const lead = await this.getLeadOrThrow(id);
+    const deal = await this.getDealOrThrow(id);
     const activities = await this.repo.getActivities(id);
-    return { ...this.toView(lead as LeadRecord), activities };
+    return { ...this.toView(deal as DealRecord), activities };
   }
 
-  async update(id: string, dto: UpdateLeadDto, actor: AuthenticatedUser) {
-    const lead = await this.getLeadOrThrow(id);
-    this.assertCanWrite(lead, actor);
+  async update(id: string, dto: UpdateDealDto, actor: AuthenticatedUser) {
+    const deal = await this.getDealOrThrow(id);
+    this.assertCanWrite(deal, actor);
     const updated = await this.repo.update(id, {
       title: dto.title,
       contactName: dto.contactName,
@@ -146,30 +146,30 @@ export class LeadsService {
       value: dto.value ?? undefined,
       currency: dto.currency,
     });
-    return this.toView(updated as LeadRecord);
+    return this.toView(updated as DealRecord);
   }
 
-  async move(id: string, dto: MoveLeadDto, actor: AuthenticatedUser) {
-    const lead = await this.getLeadOrThrow(id);
-    this.assertCanWrite(lead, actor);
+  async move(id: string, dto: MoveDealDto, actor: AuthenticatedUser) {
+    const deal = await this.getDealOrThrow(id);
+    this.assertCanWrite(deal, actor);
 
     const toStage = await this.repo.getStage(dto.toStageId);
     if (!toStage) {
       throw new BadRequestException('Geçersiz hedef stage.');
     }
     // Cross-pipeline taşıma engeli.
-    if (toStage.pipelineId !== lead.pipelineId) {
+    if (toStage.pipelineId !== deal.pipelineId) {
       throw new BadRequestException(
-        "Lead farklı bir pipeline'ın stage'ine taşınamaz.",
+        "Deal farklı bir pipeline'ın stage'ine taşınamaz.",
       );
     }
 
     const beforeRank = await this.resolveNeighborRank(
-      dto.beforeLeadId,
+      dto.beforeDealId,
       dto.toStageId,
     );
     const afterRank = await this.resolveNeighborRank(
-      dto.afterLeadId,
+      dto.afterDealId,
       dto.toStageId,
     );
 
@@ -182,34 +182,34 @@ export class LeadsService {
     }
 
     const status = toStage.isWon
-      ? LeadStatus.WON
+      ? DealStatus.WON
       : toStage.isLost
-        ? LeadStatus.LOST
-        : LeadStatus.OPEN;
+        ? DealStatus.LOST
+        : DealStatus.OPEN;
 
     const moved = await this.repo.applyMove({
       id,
       toStageId: dto.toStageId,
       rank,
       status,
-      fromStageId: lead.stageId,
+      fromStageId: deal.stageId,
       userId: actor.id,
     });
     this.logger.log(
-      `lead.move by=${actor.id} lead=${id} ${lead.stageId}->${dto.toStageId} rank=${rank}`,
+      `deal.move by=${actor.id} deal=${id} ${deal.stageId}->${dto.toStageId} rank=${rank}`,
     );
-    this.events.emit('lead.moved', {
-      leadId: id,
-      fromStageId: lead.stageId,
+    this.events.emit('deal.moved', {
+      dealId: id,
+      fromStageId: deal.stageId,
       toStageId: dto.toStageId,
       status,
     });
-    return this.toView(moved as LeadRecord);
+    return this.toView(moved as DealRecord);
   }
 
-  async assign(id: string, dto: AssignLeadDto, actor: AuthenticatedUser) {
-    const lead = await this.getLeadOrThrow(id);
-    this.assertCanWrite(lead, actor);
+  async assign(id: string, dto: AssignDealDto, actor: AuthenticatedUser) {
+    const deal = await this.getDealOrThrow(id);
+    this.assertCanWrite(deal, actor);
     const ownerId = dto.ownerId ?? null;
     if (ownerId) {
       const exists = await this.repo.userExists(ownerId);
@@ -218,8 +218,8 @@ export class LeadsService {
       }
     }
     const updated = await this.repo.setOwner(id, ownerId);
-    this.logger.log(`lead.assign by=${actor.id} lead=${id} owner=${ownerId}`);
-    return this.toView(updated as LeadRecord);
+    this.logger.log(`deal.assign by=${actor.id} deal=${id} owner=${ownerId}`);
+    return this.toView(updated as DealRecord);
   }
 
   async addActivity(
@@ -227,8 +227,8 @@ export class LeadsService {
     dto: CreateActivityDto,
     actor: AuthenticatedUser,
   ) {
-    const lead = await this.getLeadOrThrow(id);
-    this.assertCanWrite(lead, actor);
+    const deal = await this.getDealOrThrow(id);
+    this.assertCanWrite(deal, actor);
     const payload: Prisma.InputJsonValue = {
       ...(dto.payload ?? {}),
       ...(dto.note ? { note: dto.note } : {}),
@@ -237,50 +237,50 @@ export class LeadsService {
   }
 
   async remove(id: string, actor: AuthenticatedUser) {
-    const lead = await this.getLeadOrThrow(id);
-    this.assertCanWrite(lead, actor);
+    const deal = await this.getDealOrThrow(id);
+    this.assertCanWrite(deal, actor);
     await this.repo.softDelete(id);
-    this.logger.log(`lead.delete by=${actor.id} lead=${id}`);
+    this.logger.log(`deal.delete by=${actor.id} deal=${id}`);
     return { deleted: true };
   }
 
   // --- Yardımcılar ---
 
-  private async getLeadOrThrow(id: string) {
-    const lead = await this.repo.getLead(id);
-    if (!lead) {
-      throw new NotFoundException('Lead bulunamadı');
+  private async getDealOrThrow(id: string) {
+    const deal = await this.repo.getDeal(id);
+    if (!deal) {
+      throw new NotFoundException('Deal bulunamadı');
     }
-    return lead;
+    return deal;
   }
 
-  // Sahiplik: MANAGER/ADMIN hepsine; diğerleri yalnız kendi lead'ine yazabilir (IDOR engeli).
+  // Sahiplik: MANAGER/ADMIN hepsine; diğerleri yalnız kendi deal'ine yazabilir (IDOR engeli).
   private assertCanWrite(
-    lead: { ownerId: string | null },
+    deal: { ownerId: string | null },
     actor: AuthenticatedUser,
   ): void {
     const managesAll = actor.roles.some((r) => MANAGE_ALL_ROLES.includes(r));
     if (managesAll) return;
-    if (lead.ownerId && lead.ownerId === actor.id) return;
-    throw new ForbiddenException('Bu lead üzerinde yetkiniz yok.');
+    if (deal.ownerId && deal.ownerId === actor.id) return;
+    throw new ForbiddenException('Bu deal üzerinde yetkiniz yok.');
   }
 
   // Komşu kart rank'ini çözer; kart aynı hedef stage'de ve silinmemiş olmalı (IDOR/tutarlılık).
   private async resolveNeighborRank(
-    leadId: string | undefined,
+    dealId: string | undefined,
     toStageId: string,
   ): Promise<number | null> {
-    if (!leadId) return null;
-    const neighbor = await this.repo.getLead(leadId);
+    if (!dealId) return null;
+    const neighbor = await this.repo.getDeal(dealId);
     if (!neighbor || neighbor.stageId !== toStageId) {
       throw new BadRequestException(
-        'Komşu kart hedef sütunda bulunamadı (geçersiz before/afterLeadId).',
+        'Komşu kart hedef sütunda bulunamadı (geçersiz before/afterDealId).',
       );
     }
     return Number(neighbor.rank);
   }
 
-  private toView(l: LeadRecord) {
+  private toView(l: DealRecord) {
     return {
       id: l.id,
       pipelineId: l.pipelineId,

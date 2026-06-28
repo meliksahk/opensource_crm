@@ -31,7 +31,7 @@ export class CreateRoleDto {
   // İzinler "kaynak.eylem" action string'leri olarak verilir; bilinen kümeyle sınırlı.
   @ApiPropertyOptional({
     type: [String],
-    example: ['lead.read', 'invoice.read'],
+    example: ['deal.read', 'invoice.read'],
   })
   @IsOptional()
   @IsArray()

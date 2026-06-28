@@ -1,4 +1,4 @@
-// src/modules/leads/dto/query-lead.dto.ts
+// src/modules/deals/dto/query-deal.dto.ts
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEnum,
@@ -9,13 +9,13 @@ import {
 } from 'class-validator';
 import { PaginationDto } from '../../../common/dto/pagination.dto';
 
-export enum LeadStatusFilter {
+export enum DealStatusFilter {
   OPEN = 'OPEN',
   WON = 'WON',
   LOST = 'LOST',
 }
 
-export class QueryLeadDto extends PaginationDto {
+export class QueryDealDto extends PaginationDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsUUID('4')
@@ -26,10 +26,10 @@ export class QueryLeadDto extends PaginationDto {
   @IsUUID('4')
   stageId?: string;
 
-  @ApiPropertyOptional({ enum: LeadStatusFilter })
+  @ApiPropertyOptional({ enum: DealStatusFilter })
   @IsOptional()
-  @IsEnum(LeadStatusFilter)
-  status?: LeadStatusFilter;
+  @IsEnum(DealStatusFilter)
+  status?: DealStatusFilter;
 
   // Arama: title/company/contactName (Prisma parametrik → injection yok).
   @ApiPropertyOptional()
