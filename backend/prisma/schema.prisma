@@ -20,6 +20,8 @@ model User {
   firstName     String
   lastName      String
   isActive      Boolean        @default(true)
+  // v2.10 multi-tenancy: kullanıcı bir tenant'a bağlı (null = platform/cross-tenant).
+  tenantId      String?
   roles         UserRole[]
   refreshTokens RefreshToken[]
   ownedDeals    Deal[]         @relation("DealOwner")
@@ -27,6 +29,7 @@ model User {
   updatedAt     DateTime       @updatedAt
 
   @@index([email])
+  @@index([tenantId])
 }
 
 model Role {

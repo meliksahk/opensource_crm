@@ -105,6 +105,10 @@ export const PERMISSIONS = {
     EXPORT: 'gdpr.export',
     ERASE: 'gdpr.erase',
   },
+  // v2.10 — platform yönetimi (tenant'lar arası; yalnız platform-admin)
+  PLATFORM: {
+    TENANT_MANAGE: 'platform.tenant.manage',
+  },
 } as const;
 
 // Tüm izinlerin düz listesi (seed + doğrulama için).

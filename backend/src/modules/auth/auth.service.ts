@@ -148,6 +148,7 @@ export class AuthService {
     email: string;
     firstName: string;
     lastName: string;
+    tenantId?: string | null;
     roles: { role: { name: string } }[];
   }): Promise<LoginResult> {
     const roles = user.roles.map((ur) => ur.role.name);
@@ -156,6 +157,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       roles,
+      tenantId: user.tenantId ?? null,
     };
     const accessToken = await this.jwt.signAsync(accessPayload, {
       secret: this.config.getOrThrow<string>('JWT_ACCESS_SECRET'),

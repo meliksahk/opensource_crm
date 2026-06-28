@@ -12,6 +12,7 @@ export interface AccessTokenPayload {
   sub: string;
   email: string;
   roles: string[];
+  tenantId?: string | null;
 }
 
 @Injectable()
@@ -44,6 +45,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       email: user.email,
       roles: user.roles.map((ur) => ur.role.name),
       permissions: [...permissions],
+      tenantId: user.tenantId ?? null,
     };
   }
 }

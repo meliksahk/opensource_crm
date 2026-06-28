@@ -33,6 +33,7 @@ import { DataModule } from './modules/data/data.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { SearchModule } from './modules/search/search.module';
 import { GdprModule } from './modules/gdpr/gdpr.module';
+import { TenantsModule } from './modules/tenants/tenants.module';
 import { TenantMiddleware } from './common/tenant/tenant.middleware';
 
 @Module({
@@ -74,6 +75,7 @@ import { TenantMiddleware } from './common/tenant/tenant.middleware';
     AuditModule,
     SearchModule,
     GdprModule,
+    TenantsModule,
   ],
   providers: [
     // Guard sırası önemli: kimlik → rol → izin (her biri bir öncekine dayanır).

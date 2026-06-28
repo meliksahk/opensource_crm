@@ -66,6 +66,17 @@ disiplini korunur.
 - **Dürüstlük notu:** in-app bildirim (Notification) bu fazda yapılmadı —
   event bus + kullanıcı hedefleme tasarımı gerektiriyor; ayrı bir alt-faza alındı.
 
-## V2.10 — Multi-tenancy tamamlama
-- Tüm modeller `tenantId`, JWT tenant claim, subdomain, RLS, `@@unique([tenantId,…])`,
-  platform-admin.
+## V2.10 — Multi-tenancy tamamlama — ✅ TAMAM (RLS/subdomain dürüstlük notlu)
+- `User.tenantId` eklendi; **JWT tenant claim** (login access token `tenantId`
+  taşır). `TenantMiddleware` artık tenant'ı **JWT claim**'den çözer; başlık
+  (`x-tenant-id`) yalnız fallback → tenant-scoped kullanıcı başlıkla EZEMEZ (izolasyon).
+- `tenantId=null` = **platform-admin** (cross-tenant). `platform.tenant.manage`
+  izni + Tenant CRUD + kullanıcı→tenant atama (`/tenants`). Frontend: Tenant'lar sayfası.
+- Test: 5 e2e (JWT claim izolasyon, cross-tenant 404, başlık ezme engeli, 403).
+- **Dürüstlük notları (pragmatik sınır):**
+  - **RLS:** Postgres satır düzeyi güvenlik yerine **uygulama katmanı** Prisma
+    `$use` tenant filtresi kullanılıyor (docs/06'daki tercih). DB-RLS eklenmedi.
+  - **Subdomain:** çözümleme JWT claim ile yapıldığı için backend'de subdomain
+    ayrıştırma eklenmedi; frontend yönlendirmesi/ileride eklenebilir.
+  - **`@@unique([tenantId,…])`:** sıralı fatura/teklif numarası global benzersiz
+    kaldı (per-tenant numaralandırma ileride; mevcut sayaç yapısını bozmamak için).

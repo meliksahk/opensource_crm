@@ -7,6 +7,8 @@ export interface AuthenticatedUser {
   email: string;
   roles: string[];
   permissions: string[];
+  // v2.10: kullanıcının tenant'ı (null = platform/cross-tenant).
+  tenantId?: string | null;
 }
 
 export const CurrentUser = createParamDecorator(

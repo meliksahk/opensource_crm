@@ -23,6 +23,9 @@ export function Sidebar() {
           <NavItem href="/data" label="Veri" />
         )}
         {can('audit.read') && <NavItem href="/audit" label="Denetim" />}
+        {can('platform.tenant.manage') && (
+          <NavItem href="/tenants" label="Tenant'lar" />
+        )}
         {can('user.read') && <NavItem href="/users" label="Kullanıcılar" />}
       </nav>
     </aside>
