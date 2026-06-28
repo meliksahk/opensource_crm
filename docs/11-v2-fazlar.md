@@ -54,8 +54,17 @@ disiplini korunur.
 - İzinler `data.export`/`data.import`/`data.merge`. Frontend: Veri sayfası
   (indir + yapıştır-içe aktar). Test: 5 unit (csv) + 7 e2e.
 
-## V2.9 — Platform olgunluk
-- `AuditLog` tablosu, full-text arama, bildirim, GDPR dışa aktar/sil, mobil PWA.
+## V2.9 — Platform olgunluk — ✅ TAMAM (bildirim sonraki sürüme bırakıldı)
+- **AuditLog**: append-only tablo + global `AuditInterceptor` (mutasyonları
+  aktör/eylem/varlık/durum ile kaydeder) + `GET /audit-logs` (audit.read/ADMIN).
+- **Arama**: `GET /search?q=` deals/contacts/companies (izne göre süzülür).
+- **GDPR**: `GET /gdpr/contacts/:id/export` (taşınabilirlik) +
+  `POST /.../erase` (unutulma; deal bağı kopar, tek transaction) — gdpr.* (ADMIN).
+- **PWA**: manifest.json + ikon + viewport temalı.
+- Frontend: Topbar global arama + /search, /audit (admin) sayfaları.
+- Test: 3 unit (arama izin süzme) + 4 e2e (audit/search/gdpr).
+- **Dürüstlük notu:** in-app bildirim (Notification) bu fazda yapılmadı —
+  event bus + kullanıcı hedefleme tasarımı gerektiriyor; ayrı bir alt-faza alındı.
 
 ## V2.10 — Multi-tenancy tamamlama
 - Tüm modeller `tenantId`, JWT tenant claim, subdomain, RLS, `@@unique([tenantId,…])`,

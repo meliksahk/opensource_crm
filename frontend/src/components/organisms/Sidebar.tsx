@@ -22,6 +22,7 @@ export function Sidebar() {
         {(can('data.export') || can('data.import')) && (
           <NavItem href="/data" label="Veri" />
         )}
+        {can('audit.read') && <NavItem href="/audit" label="Denetim" />}
         {can('user.read') && <NavItem href="/users" label="Kullanıcılar" />}
       </nav>
     </aside>

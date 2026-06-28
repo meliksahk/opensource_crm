@@ -97,6 +97,14 @@ export const PERMISSIONS = {
     IMPORT: 'data.import',
     MERGE: 'data.merge',
   },
+  // v2.9 — platform olgunluk
+  AUDIT: {
+    READ: 'audit.read',
+  },
+  GDPR: {
+    EXPORT: 'gdpr.export',
+    ERASE: 'gdpr.erase',
+  },
 } as const;
 
 // Tüm izinlerin düz listesi (seed + doğrulama için).

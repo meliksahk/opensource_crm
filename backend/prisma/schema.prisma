@@ -512,3 +512,23 @@ model CustomFieldDef {
   @@unique([entity, key])
   @@index([entity])
 }
+
+// ===== v2.9 — Platform olgunluk (denetim kaydı) =====
+
+// Değişiklik yapan tüm istekler kaydedilir (append-only; hard delete yok).
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actorEmail String?
+  action     String // HTTP metodu (POST/PATCH/DELETE)
+  entity     String // yol segmenti (deals, invoices, ...)
+  entityId   String?
+  path       String
+  statusCode Int
+  tenantId   String?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entity, createdAt])
+  @@index([createdAt])
+}

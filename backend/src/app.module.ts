@@ -30,6 +30,9 @@ import { AiModule } from './modules/ai/ai.module';
 import { ProductsModule } from './modules/products/products.module';
 import { QuotesModule } from './modules/quotes/quotes.module';
 import { DataModule } from './modules/data/data.module';
+import { AuditModule } from './modules/audit/audit.module';
+import { SearchModule } from './modules/search/search.module';
+import { GdprModule } from './modules/gdpr/gdpr.module';
 import { TenantMiddleware } from './common/tenant/tenant.middleware';
 
 @Module({
@@ -68,6 +71,9 @@ import { TenantMiddleware } from './common/tenant/tenant.middleware';
     ProductsModule,
     QuotesModule,
     DataModule,
+    AuditModule,
+    SearchModule,
+    GdprModule,
   ],
   providers: [
     // Guard sırası önemli: kimlik → rol → izin (her biri bir öncekine dayanır).
