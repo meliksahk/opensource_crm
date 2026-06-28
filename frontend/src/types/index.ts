@@ -58,6 +58,33 @@ export interface User {
   roles: string[];
 }
 
+export interface UnqualifiedLead {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  companyName: string | null;
+  source: string | null;
+  status: 'NEW' | 'WORKING' | 'QUALIFIED' | 'UNQUALIFIED' | 'CONVERTED';
+}
+
+export interface Company {
+  id: string;
+  name: string;
+  domain: string | null;
+  industry: string | null;
+  contactCount: number;
+}
+
+export interface Contact {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  title: string | null;
+  company: { id: string; name: string } | null;
+}
+
 export interface Paginated<T> {
   data: T[];
   meta: { page: number; limit: number; total: number };

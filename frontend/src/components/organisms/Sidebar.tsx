@@ -10,7 +10,10 @@ export function Sidebar() {
       <div className="mb-6 px-2 text-lg font-bold text-white">CRM</div>
       <nav className="space-y-1">
         <NavItem href="/" label="Panel" />
-        {can('deal.read') && <NavItem href="/deals" label="Satış (Deal)" />}
+        {can('lead.read') && <NavItem href="/leads" label="Lead'ler" />}
+        {can('deal.read') && <NavItem href="/deals" label="Anlaşmalar" />}
+        {can('contact.read') && <NavItem href="/contacts" label="Kişiler" />}
+        {can('company.read') && <NavItem href="/companies" label="Şirketler" />}
         {can('invoice.read') && <NavItem href="/invoices" label="Faturalar" />}
         {can('user.read') && <NavItem href="/users" label="Kullanıcılar" />}
       </nav>

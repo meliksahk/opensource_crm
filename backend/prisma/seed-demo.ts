@@ -126,6 +126,38 @@ async function main() {
     }
   }
 
+  // 4) Örnek Company + Contact (yalnız hiç yoksa).
+  const salesOwner = userIdByRole['SALES'];
+  if ((await prisma.company.count()) === 0) {
+    const acme = await prisma.company.create({
+      data: {
+        name: 'ACME A.Ş.',
+        domain: 'acme.test',
+        industry: 'Yazılım',
+        ownerId: salesOwner,
+      },
+    });
+    const beta = await prisma.company.create({
+      data: { name: 'Beta Ltd.', domain: 'beta.test', industry: 'Danışmanlık', ownerId: salesOwner },
+    });
+    await prisma.contact.createMany({
+      data: [
+        { firstName: 'Ayşe', lastName: 'Yılmaz', email: 'ayse@acme.test', title: 'Satınalma', companyId: acme.id, ownerId: salesOwner },
+        { firstName: 'Mehmet', lastName: 'Demir', email: 'mehmet@beta.test', title: 'CTO', companyId: beta.id, ownerId: salesOwner },
+      ],
+    });
+  }
+
+  // 5) Örnek nitelenmemiş Lead'ler (yalnız hiç yoksa).
+  if ((await prisma.lead.count()) === 0 && salesOwner) {
+    await prisma.lead.createMany({
+      data: [
+        { firstName: 'Deniz', lastName: 'Kaya', email: 'deniz@aday.test', companyName: 'Yeni Müşteri A', source: 'WEB', ownerId: salesOwner },
+        { firstName: 'Ece', lastName: 'Şahin', email: 'ece@aday.test', companyName: 'Yeni Müşteri B', source: 'REFERRAL', ownerId: salesOwner },
+      ],
+    });
+  }
+
   console.log(
     `Demo seed tamam. Test kullanıcıları (parola: ${DEMO_PASSWORD}): ${DEMO_USERS.map(
       (u) => u.email,
