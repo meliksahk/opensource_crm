@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { LeadStatus, Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ROLE_NAMES } from '../../common/constants/permission.enum';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 import { LeadsRepository } from './leads.repository';
@@ -44,7 +45,10 @@ interface LeadRecord {
 export class LeadsService {
   private readonly logger = new Logger(LeadsService.name);
 
-  constructor(private readonly repo: LeadsRepository) {}
+  constructor(
+    private readonly repo: LeadsRepository,
+    private readonly events: EventEmitter2,
+  ) {}
 
   async create(dto: CreateLeadDto, actor: AuthenticatedUser) {
     const stage = await this.repo.getStage(dto.stageId);
@@ -76,6 +80,12 @@ export class LeadsService {
       owner: { connect: { id: actor.id } },
     });
     this.logger.log(`lead.create by=${actor.id} lead=${created.id}`);
+    // Domain olayı yay (entegrasyon handler'ları dinler — gevşek bağlılık).
+    this.events.emit('lead.created', {
+      leadId: created.id,
+      title: created.title,
+      pipelineId: created.pipelineId,
+    });
     return this.toView(created as LeadRecord);
   }
 
@@ -188,6 +198,12 @@ export class LeadsService {
     this.logger.log(
       `lead.move by=${actor.id} lead=${id} ${lead.stageId}->${dto.toStageId} rank=${rank}`,
     );
+    this.events.emit('lead.moved', {
+      leadId: id,
+      fromStageId: lead.stageId,
+      toStageId: dto.toStageId,
+      status,
+    });
     return this.toView(moved as LeadRecord);
   }
 

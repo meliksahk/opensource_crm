@@ -219,3 +219,57 @@ model InvoiceCounter {
   year       Int @id
   lastNumber Int @default(0)
 }
+
+// ===== Faz 5 — Dış Entegrasyonlar =====
+
+enum DeliveryStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  DEAD
+}
+
+model WebhookSubscription {
+  id          String            @id @default(uuid())
+  url         String
+  events      String[] // ["lead.created","invoice.paid"]
+  secret      String // HMAC imza anahtarı (yalnız oluşturmada döner; sonra gizli)
+  isActive    Boolean           @default(true)
+  createdById String
+  createdAt   DateTime          @default(now())
+  deliveries  WebhookDelivery[]
+}
+
+model WebhookDelivery {
+  id             String              @id @default(uuid())
+  subscriptionId String
+  event          String
+  payload        Json
+  status         DeliveryStatus      @default(PENDING)
+  attempts       Int                 @default(0)
+  lastError      String?
+  nextRetryAt    DateTime?
+  signature      String
+  createdAt      DateTime            @default(now())
+  subscription   WebhookSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@index([status, nextRetryAt])
+  @@index([subscriptionId])
+}
+
+model EmailLog {
+  id        String   @id @default(uuid())
+  to        String
+  subject   String
+  template  String
+  status    String // SENT, FAILED, SIMULATED
+  error     String?
+  createdAt DateTime @default(now())
+}
+
+// Gelen webhook idempotency anahtarları (tekrar işleme engeli).
+model ProcessedWebhook {
+  key       String   @id // source + delivery id
+  source    String
+  createdAt DateTime @default(now())
+}

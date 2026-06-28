@@ -13,6 +13,7 @@ import { AppModule } from './app.module';
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: false,
+    rawBody: true, // gelen webhook HMAC doğrulaması için ham gövde
   });
   const config = app.get(ConfigService);
 

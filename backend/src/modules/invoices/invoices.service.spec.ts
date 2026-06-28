@@ -1,6 +1,7 @@
 // src/modules/invoices/invoices.service.spec.ts
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { InvoiceStatus, Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InvoicesService } from './invoices.service';
 import { InvoicesRepository } from './invoices.repository';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
@@ -63,7 +64,11 @@ describe('InvoicesService', () => {
       addPayment: jest.fn(),
       cancel: jest.fn(),
     } as unknown as typeof repo;
-    service = new InvoicesService(repo as unknown as InvoicesRepository);
+    const events = { emit: jest.fn() } as unknown as EventEmitter2;
+    service = new InvoicesService(
+      repo as unknown as InvoicesRepository,
+      events,
+    );
   });
 
   const createDto = {

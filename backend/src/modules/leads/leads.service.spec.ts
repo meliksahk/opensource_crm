@@ -1,6 +1,7 @@
 // src/modules/leads/leads.service.spec.ts
 import { BadRequestException } from '@nestjs/common';
 import { LeadStatus, Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { LeadsService } from './leads.service';
 import { LeadsRepository } from './leads.repository';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
@@ -52,7 +53,8 @@ describe('LeadsService', () => {
       addActivity: jest.fn(),
       getActivities: jest.fn(),
     } as unknown as typeof repo;
-    service = new LeadsService(repo as unknown as LeadsRepository);
+    const events = { emit: jest.fn() } as unknown as EventEmitter2;
+    service = new LeadsService(repo as unknown as LeadsRepository, events);
   });
 
   // U-3.5

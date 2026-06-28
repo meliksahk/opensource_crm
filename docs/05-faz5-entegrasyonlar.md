@@ -243,4 +243,28 @@ export class CreateWebhookDto {
 | S-5.3 | Secret yanıt/loglarda sızıntı | yok |
 | C-5.1 | Alıcı yavaş/timeout | teslimat timeout + retry, sistem bloklanmaz |
 
+---
+
+## 12. Uygulama Notları (gerçekleşen kararlar / pragmatik sınırlar)
+
+- **Olay otobüsü:** `@nestjs/event-emitter`. İş servisleri yalnız `emit` eder
+  (`lead.created/moved`, `invoice.issued/paid`); `WebhookEventHandler` dinleyip
+  imzalı teslimat tetikler (gevşek bağlılık).
+- **Giden teslimat:** `IHttpClient` (fetch + AbortController timeout) soyutlaması;
+  imza HMAC-SHA256, `WebhookDelivery` kaydı SUCCESS/FAILED(+backoff)/DEAD.
+- **Mail:** `IMailProvider` + `SimulatedMailProvider` (EmailLog=SIMULATED). `smtp`
+  sürücüsü arayüz hazır ama **henüz uygulanmadı** (PRAGMATİK SINIR).
+- **Gelen webhook idempotency:** `ProcessedWebhook` tablosu (`source:deliveryId`).
+  Doğrulama sırrı tek paylaşımlı `INBOUND_WEBHOOK_SECRET` (per-source secret ileride).
+- **Retry worker:** `processDuePending()` metodu hazır ve test edildi; ancak
+  **zamanlanmış cron/queue bu fazda kurulmadı** (PRAGMATİK SINIR — Faz 6/altyapı).
+- **Secret saklama:** üretilir, **bir kez** döner, listede/logda görünmez; ancak
+  **at-rest şifreleme uygulanmadı** (DB'de düz). İstenirse AES-256-GCM + KEY env eklenebilir.
+- **SSRF:** IP literal + bilinen iç host engeli (`isSafeWebhookUrl`). DNS çözümü ile
+  rebinding kontrolü dispatch anında yapılmıyor (PRAGMATİK SINIR). `WEBHOOK_ALLOW_PRIVATE`
+  yalnız test/self-host içindir.
+
+**Doğrulama:** 70 birim + 47 e2e testi gerçek PostgreSQL ile yeşil (HMAC imza/replay,
+SSRF, backoff, mail CRLF injection, inbound imza+idempotency, dispatcher SUCCESS/FAILED).
+
 > **Sonraki faz:** [Faz 6 — Dockerization & Multi-tenancy](./06-faz6-docker-multitenancy.md)

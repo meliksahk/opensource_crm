@@ -34,4 +34,11 @@ export const envValidationSchema = Joi.object({
 
   SEED_ADMIN_EMAIL: Joi.string().email().optional(),
   SEED_ADMIN_PASSWORD: Joi.string().optional(),
+
+  // --- Faz 5: Entegrasyonlar ---
+  MAIL_DRIVER: Joi.string().valid('simulated', 'smtp').default('simulated'),
+  // Giden webhook için özel ağ/http'ye izin (test/self-host; üretimde false).
+  WEBHOOK_ALLOW_PRIVATE: Joi.boolean().default(false),
+  // Gelen webhook HMAC doğrulama sırrı (opsiyonel; yoksa inbound 400).
+  INBOUND_WEBHOOK_SECRET: Joi.string().allow('').optional(),
 });

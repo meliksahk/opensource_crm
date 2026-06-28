@@ -29,6 +29,10 @@ export const PERMISSIONS = {
     DELETE: 'invoice.delete',
     READ_FINANCIAL: 'invoice.read_financial',
   },
+  INTEGRATION: {
+    READ: 'integration.read',
+    MANAGE: 'integration.manage',
+  },
 } as const;
 
 // Tüm izinlerin düz listesi (seed + doğrulama için).
@@ -55,6 +59,9 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.LEAD.DELETE,
     PERMISSIONS.LEAD.MOVE,
     PERMISSIONS.INVOICE.READ,
+    // Faz 5: entegrasyon yönetimi yalnız ADMIN/MANAGER.
+    PERMISSIONS.INTEGRATION.READ,
+    PERMISSIONS.INTEGRATION.MANAGE,
   ],
   [ROLE_NAMES.SALES]: [
     PERMISSIONS.LEAD.CREATE,

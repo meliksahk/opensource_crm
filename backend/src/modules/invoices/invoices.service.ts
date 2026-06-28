@@ -8,6 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InvoiceStatus, Prisma } from '@prisma/client';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PERMISSIONS } from '../../common/constants/permission.enum';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 import { InvoicesRepository } from './invoices.repository';
@@ -28,7 +29,10 @@ type InvoiceWithRelations = Prisma.InvoiceGetPayload<{
 export class InvoicesService {
   private readonly logger = new Logger(InvoicesService.name);
 
-  constructor(private readonly repo: InvoicesRepository) {}
+  constructor(
+    private readonly repo: InvoicesRepository,
+    private readonly events: EventEmitter2,
+  ) {}
 
   async create(dto: CreateInvoiceDto, actor: AuthenticatedUser) {
     this.assertTaxRate(dto.taxRate);
@@ -125,6 +129,10 @@ export class InvoicesService {
     this.logger.log(
       `invoice.issue by=${actor.id} invoice=${id} number=${issued.number}`,
     );
+    this.events.emit('invoice.issued', {
+      invoiceId: id,
+      number: issued.number,
+    });
     return this.toView(issued, actor);
   }
 
@@ -166,6 +174,14 @@ export class InvoicesService {
     this.logger.log(
       `invoice.payment by=${actor.id} invoice=${id} amount=${dto.amount} status=${status}`,
     );
+    // Tam ödeme → invoice.paid olayı.
+    if (status === InvoiceStatus.PAID) {
+      this.events.emit('invoice.paid', {
+        invoiceId: id,
+        number: invoice.number,
+        total: invoice.total.toString(),
+      });
+    }
     return this.toView(updated, actor);
   }
 

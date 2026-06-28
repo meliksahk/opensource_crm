@@ -24,7 +24,7 @@ secure-by-default, DRY/SOLID. Detaylar: [`docs/`](./docs).
 | 2 | RBAC Guard'ları + Kullanıcı Yönetimi | ✅ |
 | 3 | Satış (Lead) Modülü + Kanban | ✅ |
 | 4 | Finans & Fatura (izole yetkiler) | ✅ |
-| 5 | Dış Entegrasyonlar (Webhook, SMTP) | ⏳ |
+| 5 | Dış Entegrasyonlar (Webhook, SMTP) | ✅ |
 | 6 | Dockerization + Multi-tenancy | ⏳ |
 
 ## Hızlı Başlangıç (Backend)
