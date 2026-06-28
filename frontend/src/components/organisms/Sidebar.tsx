@@ -15,6 +15,7 @@ export function Sidebar() {
         {can('contact.read') && <NavItem href="/contacts" label="Kişiler" />}
         {can('company.read') && <NavItem href="/companies" label="Şirketler" />}
         {can('invoice.read') && <NavItem href="/invoices" label="Faturalar" />}
+        {can('deal.read') && <NavItem href="/reports" label="Raporlar" />}
         {can('user.read') && <NavItem href="/users" label="Kullanıcılar" />}
       </nav>
     </aside>
