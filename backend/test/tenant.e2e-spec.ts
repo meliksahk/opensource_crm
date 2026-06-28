@@ -136,4 +136,31 @@ describe('Multi-tenancy (e2e)', () => {
       .set('Authorization', `Bearer ${adminToken}`)
       .set('x-tenant-id', tenantA)
       .expect(200));
+
+  // Invoice de tenant kapsamında (TENANT_MODELS genişletildi)
+  it('Invoice tenant izolasyonu: A faturası B listesinde görünmez', async () => {
+    const inv = await request(app.getHttpServer())
+      .post(`${base}/invoices`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .set('x-tenant-id', tenantA)
+      .send({
+        customerName: 'Tenant-A Müşteri',
+        taxRate: '20',
+        lineItems: [{ description: 'X', quantity: '1', unitPrice: '100' }],
+      })
+      .expect(201);
+    const invId = inv.body.data.id;
+
+    const listB = await request(app.getHttpServer())
+      .get(`${base}/invoices`)
+      .set('Authorization', `Bearer ${adminToken}`)
+      .set('x-tenant-id', tenantB)
+      .expect(200);
+    expect(listB.body.data.map((i: { id: string }) => i.id)).not.toContain(
+      invId,
+    );
+
+    // Temizlik
+    await prisma.invoice.deleteMany({ where: { tenantId: tenantA } });
+  });
 });

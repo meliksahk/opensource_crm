@@ -186,12 +186,14 @@ model Invoice {
   lineItems     InvoiceLineItem[]
   payments      Payment[]
   createdById   String
+  tenantId      String? // Faz 6 multi-tenancy (nullable, kademeli geçiş)
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
 
   @@index([status])
   @@index([leadId])
   @@index([dueAt])
+  @@index([tenantId])
 }
 
 model InvoiceLineItem {
