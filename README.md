@@ -10,8 +10,8 @@ Kurumsal düzeyde, ölçeklenebilir, yüksek güvenlikli, çoklu rol destekli (R
 | Katman | Teknoloji |
 |--------|-----------|
 | Backend | NestJS · PostgreSQL · Prisma · JWT · bcrypt · class-validator |
-| Frontend (Faz 3+) | Next.js (App Router) · TypeScript · Tailwind · Atomic Design |
-| DevOps (Faz 6) | Docker · docker-compose |
+| Frontend | Next.js (App Router) · TypeScript · Tailwind · Atomic Design · React Query |
+| DevOps | Docker · docker-compose |
 
 Mimari ilkeler: **API-First**, katmanlı mimari (`Controller → Service → Repository`),
 secure-by-default, DRY/SOLID. Detaylar: [`docs/`](./docs).
@@ -53,6 +53,35 @@ npm run start:dev              # http://localhost:3000  (Swagger: /api/docs)
 
 > Prod compose'da **DB portu host'a açılmaz** (yalnız iç ağ — güvenlik). Konteynerler
 > root olmayan kullanıcıyla çalışır. Sırlar `.env`'dedir; imaja gömülmez.
+
+### Frontend (Next.js)
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:3001  (/api → backend'e proxy)
+```
+
+> Frontend `/api/*` isteklerini sunucu tarafında backend'e proxy'ler (tek origin →
+> CORS/cookie sorunsuz). Backend URL'i `BACKEND_URL` env'i ile değişir (varsayılan
+> `http://localhost:3000`).
+
+### Demo verisi & test girişleri
+
+```bash
+cd backend && npm run seed && npm run seed:demo
+```
+
+| Rol | E-posta | Parola |
+|-----|---------|--------|
+| ADMIN | `admin@crm.dev` | `ChangeMe!2026` |
+| MANAGER | `manager@crm.dev` | `Demo!2026` |
+| SALES | `sales@crm.dev` | `Demo!2026` |
+| FINANCE | `finance@crm.dev` | `Demo!2026` |
+| VIEWER | `viewer@crm.dev` | `Demo!2026` |
+
+> Roller farklı yetkiler görür: SALES faturada tutarları göremez (maskeli), FINANCE görür;
+> VIEWER salt-okuma; menü öğeleri izne göre gösterilir.
 
 ### Gereksinimler
 - Node.js ≥ 20 · Docker + Docker Compose

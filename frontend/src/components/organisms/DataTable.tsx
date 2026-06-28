@@ -1,0 +1,56 @@
+// src/components/organisms/DataTable.tsx — basit, jenerik tablo organizması.
+import { Card } from '../atoms/Card';
+
+export interface Column<T> {
+  key: string;
+  header: string;
+  render: (row: T) => React.ReactNode;
+}
+
+export function DataTable<T extends { id: string }>({
+  columns,
+  rows,
+  empty = 'Kayıt yok',
+}: {
+  columns: Column<T>[];
+  rows: T[];
+  empty?: string;
+}) {
+  return (
+    <Card className="overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-gray-50 text-left text-gray-500">
+          <tr>
+            {columns.map((c) => (
+              <th key={c.key} className="px-4 py-3 font-medium">
+                {c.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {rows.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="px-4 py-8 text-center text-gray-400"
+              >
+                {empty}
+              </td>
+            </tr>
+          ) : (
+            rows.map((row) => (
+              <tr key={row.id} className="hover:bg-gray-50">
+                {columns.map((c) => (
+                  <td key={c.key} className="px-4 py-3 text-gray-700">
+                    {c.render(row)}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+    </Card>
+  );
+}
