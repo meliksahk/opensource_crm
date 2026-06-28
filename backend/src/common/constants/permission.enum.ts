@@ -71,6 +71,10 @@ export const PERMISSIONS = {
     READ: 'custom_field.read',
     MANAGE: 'custom_field.manage',
   },
+  // v2.6 — yapay zekâ (Claude) yardımcıları
+  AI: {
+    USE: 'ai.use',
+  },
 } as const;
 
 // Tüm izinlerin düz listesi (seed + doğrulama için).
@@ -122,6 +126,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.AUTOMATION.MANAGE,
     PERMISSIONS.CUSTOM_FIELD.READ,
     PERMISSIONS.CUSTOM_FIELD.MANAGE,
+    PERMISSIONS.AI.USE,
   ],
   [ROLE_NAMES.SALES]: [
     PERMISSIONS.DEAL.CREATE,
@@ -147,6 +152,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.CONTACT.READ,
     PERMISSIONS.CONTACT.UPDATE,
     PERMISSIONS.CUSTOM_FIELD.READ,
+    PERMISSIONS.AI.USE,
   ],
   [ROLE_NAMES.FINANCE]: [
     PERMISSIONS.INVOICE.CREATE,

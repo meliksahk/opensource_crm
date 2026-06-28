@@ -29,9 +29,13 @@ disiplini korunur.
 ## V2.5 — Özelleştirme (low-code)
 - `CustomFieldDef` + kayıtlarda `customFields Json` (Deal/Contact/Company).
 
-## V2.6 — AI katmanı (Claude API, key opsiyonel)
-- `AiService` (Anthropic SDK). Uçlar: lead scoring, e-posta taslağı, özetleme,
-  duplicate tespiti, next-best-action. Key yoksa 503 "yapılandırılmadı".
+## V2.6 — AI katmanı (Claude API, key opsiyonel) — ✅ TAMAM
+- `AiService` (Anthropic SDK, model `claude-opus-4-8`, structured outputs). Uçlar:
+  `GET /ai/status`, `POST /ai/deals/:id/score` (deal puanlama + next-best-action),
+  `POST /ai/draft-email` (e-posta taslağı), `POST /ai/summarize` (özetleme).
+  İzin: `ai.use` (ADMIN/MANAGER/SALES). `ANTHROPIC_API_KEY` **opsiyonel**: yoksa
+  client `null` → uçlar 503, `status.enabled:false` (uygulama yine açılır).
+  Test: 8 unit (mock client + no-key 503 + refusal), 5 e2e (status/yetki/503).
 
 ## V2.7 — Ürün + Teklif/CPQ
 - `Product`, `Quote` (kalemler) → mevcut `Invoice`'a dönüştür.
