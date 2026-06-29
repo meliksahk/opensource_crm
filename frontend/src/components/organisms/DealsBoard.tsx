@@ -1,6 +1,6 @@
 // src/components/organisms/DealsBoard.tsx — Kanban panosu (stage sütunları + deal kartları).
 import { Badge } from '../atoms/Badge';
-import type { Board } from '@/types';
+import type { Board, Deal } from '@/types';
 
 function stageTone(stage: { isWon: boolean; isLost: boolean }) {
   if (stage.isWon) return 'green' as const;
@@ -8,7 +8,13 @@ function stageTone(stage: { isWon: boolean; isLost: boolean }) {
   return 'blue' as const;
 }
 
-export function DealsBoard({ board }: { board: Board }) {
+export function DealsBoard({
+  board,
+  onSelect,
+}: {
+  board: Board;
+  onSelect?: (deal: Deal) => void;
+}) {
   return (
     <div className="flex gap-4 overflow-x-auto pb-4">
       {board.stages.map((stage) => (
@@ -21,9 +27,11 @@ export function DealsBoard({ board }: { board: Board }) {
           </div>
           <div className="space-y-2">
             {stage.deals.map((deal) => (
-              <div
+              <button
                 key={deal.id}
-                className="rounded-lg border border-gray-200 bg-white p-3 shadow-sm"
+                type="button"
+                onClick={() => onSelect?.(deal)}
+                className="w-full rounded-lg border border-gray-200 bg-white p-3 text-left shadow-sm transition hover:border-brand-300 hover:shadow"
               >
                 <p className="text-sm font-medium text-gray-900">
                   {deal.title}
@@ -36,7 +44,7 @@ export function DealsBoard({ board }: { board: Board }) {
                     {deal.value} {deal.currency}
                   </p>
                 )}
-              </div>
+              </button>
             ))}
             {stage.deals.length === 0 && (
               <p className="rounded-lg border border-dashed border-gray-200 p-3 text-center text-xs text-gray-400">

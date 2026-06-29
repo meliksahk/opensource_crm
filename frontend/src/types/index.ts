@@ -15,6 +15,8 @@ export interface Deal {
   id: string;
   title: string;
   contactName: string | null;
+  email: string | null;
+  phone: string | null;
   company: string | null;
   value: string | null;
   currency: string;
