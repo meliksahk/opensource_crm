@@ -131,4 +131,49 @@ describe('Reports (e2e)', () => {
       .set(auth(salesToken))
       .expect(403);
   });
+
+  it('GET /reports/revenue/monthly → FINANCE N ay, SALES 403', async () => {
+    const r = await request(app.getHttpServer())
+      .get(`${base}/reports/revenue/monthly?months=6`)
+      .set(auth(financeToken))
+      .expect(200);
+    expect(r.body.data.months).toHaveLength(6);
+    expect(r.body.data.months[0]).toHaveProperty('invoiced');
+    expect(r.body.data.months[0]).toHaveProperty('paid');
+    await request(app.getHttpServer())
+      .get(`${base}/reports/revenue/monthly`)
+      .set(auth(salesToken))
+      .expect(403);
+  });
+
+  it('GET /reports/sales/by-owner → SALES 200, satışçı satırları', async () => {
+    const r = await request(app.getHttpServer())
+      .get(`${base}/reports/sales/by-owner`)
+      .set(auth(salesToken))
+      .expect(200);
+    expect(Array.isArray(r.body.data)).toBe(true);
+    if (r.body.data.length) {
+      expect(r.body.data[0]).toHaveProperty('wonValue');
+      expect(r.body.data[0]).toHaveProperty('winRate');
+    }
+  });
+
+  it('GET /reports/products/top → SALES 200, ciroya göre sıralı', async () => {
+    const r = await request(app.getHttpServer())
+      .get(`${base}/reports/products/top?limit=5`)
+      .set(auth(salesToken))
+      .expect(200);
+    expect(Array.isArray(r.body.data)).toBe(true);
+    expect(r.body.data.length).toBeLessThanOrEqual(5);
+  });
+
+  it('GET /reports/deals/won-lost → win-rate + aylık trend', async () => {
+    const r = await request(app.getHttpServer())
+      .get(`${base}/reports/deals/won-lost?months=4`)
+      .set(auth(salesToken))
+      .expect(200);
+    expect(r.body.data).toHaveProperty('winRate');
+    expect(r.body.data.months).toHaveLength(4);
+    expect(r.body.data.months[0]).toHaveProperty('wonCount');
+  });
 });

@@ -58,4 +58,43 @@ export class ReportsRepository {
     });
     return all;
   }
+
+  // --- Yeni raporlar ---
+  // Not: groupBy tenant middleware'inde scope EDİLMEZ → findMany kullanılır (scope güvenli),
+  // toplulaştırma servis katmanında JS ile (demo ölçeğinde yeterli).
+
+  nonCancelledInvoices() {
+    return this.prisma.invoice.findMany({
+      where: { status: { not: InvoiceStatus.CANCELLED } },
+      select: { total: true, amountPaid: true, issuedAt: true, createdAt: true },
+    });
+  }
+
+  allDeals() {
+    return this.prisma.deal.findMany({
+      where: { deletedAt: null },
+      select: { ownerId: true, status: true, value: true, updatedAt: true },
+    });
+  }
+
+  usersByIds(ids: string[]) {
+    return this.prisma.user.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, firstName: true, lastName: true, email: true },
+    });
+  }
+
+  quoteLinesWithProduct() {
+    return this.prisma.quoteLineItem.findMany({
+      where: { productId: { not: null } },
+      select: { productId: true, lineTotal: true, quantity: true },
+    });
+  }
+
+  productsByIds(ids: string[]) {
+    return this.prisma.product.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, name: true },
+    });
+  }
 }

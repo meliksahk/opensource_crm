@@ -35,4 +35,29 @@ export class ReportsController {
   invoicesSummary() {
     return this.service.invoicesSummary();
   }
+
+  // Aylık ciro (faturalanan + tahsil) — finansal yetki gerektirir.
+  @Get('revenue/monthly')
+  @Permissions(PERMISSIONS.INVOICE.READ_FINANCIAL)
+  revenueMonthly(@Query('months') months?: string) {
+    return this.service.revenueMonthly(Number(months) || 12);
+  }
+
+  @Get('sales/by-owner')
+  @Permissions(PERMISSIONS.DEAL.READ)
+  salesByOwner() {
+    return this.service.salesByOwner();
+  }
+
+  @Get('products/top')
+  @Permissions(PERMISSIONS.DEAL.READ)
+  topProducts(@Query('limit') limit?: string) {
+    return this.service.topProducts(Number(limit) || 10);
+  }
+
+  @Get('deals/won-lost')
+  @Permissions(PERMISSIONS.DEAL.READ)
+  wonLost(@Query('months') months?: string) {
+    return this.service.wonLostMonthly(Number(months) || 6);
+  }
 }
