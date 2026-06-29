@@ -389,6 +389,13 @@ export const en: Dict = {
     'Receiving leads FROM other systems? Configure inbound (signed) lead webhooks per form on the Lead forms page.',
   'col.events': 'Events',
   'col.created': 'Created',
+  // Sidebar grupları
+  'nav.grpSales': 'Sales',
+  'nav.grpFinance': 'Finance',
+  'nav.grpInsights': 'Insights',
+  'nav.grpConfig': 'Configuration',
+  'nav.grpAdmin': 'Administration',
+  'nav.grpPrefs': 'Preferences',
 };
 
 // --- Türkçe ---
@@ -761,6 +768,13 @@ export const tr: Dict = {
     'Başka sistemlerden lead mi ALACAKSINIZ? Gelen (imzalı) lead webhook’larını form başına Lead formları sayfasından ayarlayın.',
   'col.events': 'Olaylar',
   'col.created': 'Oluşturuldu',
+  // Sidebar grupları
+  'nav.grpSales': 'Satış',
+  'nav.grpFinance': 'Finans',
+  'nav.grpInsights': 'Analiz',
+  'nav.grpConfig': 'Yapılandırma',
+  'nav.grpAdmin': 'Yönetim',
+  'nav.grpPrefs': 'Tercihler',
 };
 
 const BUILTIN: Record<string, { name: string; dict: Dict }> = {
