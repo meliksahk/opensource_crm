@@ -410,6 +410,7 @@ export const en: Dict = {
   'rep.open': 'Open',
   'rep.unassigned': 'Unassigned',
   'rep.qty': 'qty',
+  'dash.quickLinks': 'Quick links',
 };
 
 // --- Türkçe ---
@@ -803,6 +804,7 @@ export const tr: Dict = {
   'rep.open': 'Açık',
   'rep.unassigned': 'Atanmamış',
   'rep.qty': 'adet',
+  'dash.quickLinks': 'Kısayollar',
 };
 
 const BUILTIN: Record<string, { name: string; dict: Dict }> = {
