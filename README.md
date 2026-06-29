@@ -57,6 +57,7 @@ from the live source through a two-layer **role + permission** model.
 
 ### 📊 Sales (CRM core)
 - **Pipeline + Kanban**: collision-free drag-and-drop via fractional ranking; atomic stage/order change (single transaction) + activity log.
+- **Configurable stages**: add / rename / reorder / delete Kanban columns from the panel (`/pipeline`); Won/Lost flags; delete is guarded (last stage or stages referenced by deals are blocked).
 - **Deal**: CRUD, ownership-based access, status (OPEN/WON/LOST), activities (NOTE/CALL/EMAIL/STAGE_CHANGE).
 - **Lead (unqualified)** → `convert` flow into Contact + Company + Deal.
 - **Lead intake & source tracking**: every lead records a structured **channel** (`MANUAL` / `IMPORT` / `FORM` / `WEBHOOK` / `API`) alongside the free-text sub-source, and is filterable by channel/status/source.
@@ -88,7 +89,7 @@ from the live source through a two-layer **role + permission** model.
 - Pipeline value, period/status summaries, **weighted forecast** by stage probability, financial invoice summary (permission-gated).
 
 ### 🔗 Integration & data
-- **Outbound webhooks**: HMAC-SHA256 signature, replay window, idempotency, SSRF protection.
+- **Outbound webhooks**: subscribe to events (`deal.created/moved`, `invoice.issued/paid`) and manage them in-panel (`/integrations`) — create with a one-time signing secret, send a test event, inspect delivery history. HMAC-SHA256 signature, replay window, idempotency, SSRF protection; the panel documents how the receiver verifies the signature.
 - **Email**: `simulated` and real `smtp` (nodemailer) drivers + template engine + EmailLog.
 - **CSV import/export**: export contacts/companies/deals; import contacts/companies (**dedup** + per-row errors).
 - **Duplicate detection + merge**: the source record's deals/contacts are moved to the target, then the source is deleted (single transaction).
@@ -157,6 +158,7 @@ All endpoints are served under the `/api/v1` prefix (Swagger: `/api/docs`).
 | **Auth** | `POST /auth/login` · `/auth/register` · `/auth/refresh` · `/auth/logout` |
 | **Users/Roles** | `/users` · `/roles` (CRUD + role assignment) |
 | **Deal/Kanban** | `/deals` · `/deals/board` · `PATCH /deals/:id/move` · `/deals/:id/activities` |
+| **Pipeline/Stages** | `GET /pipelines` · `POST/PATCH/DELETE /pipelines/:id/stages[/:stageId]` · `PATCH .../stages/reorder` |
 | **Lead** | `/leads` (filter `?channel=&status=&source=`) · `POST /leads/:id/convert` |
 | **Lead forms** | `/lead-forms` (CRUD, `:id/secret`, `:id/rotate-secret`) · public: `GET /public/lead-forms/:publicKey`, `POST /public/lead-forms/:publicKey/submit`, `POST /webhooks/leads/:publicKey` (HMAC) |
 | **Company / Contact** | `/companies` · `/contacts` |
