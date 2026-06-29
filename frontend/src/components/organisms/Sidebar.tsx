@@ -23,7 +23,14 @@ export function Sidebar() {
         {(can('data.export') || can('data.import')) && (
           <NavItem href="/data" label="Veri" />
         )}
+        {can('automation.read') && (
+          <NavItem href="/automation" label="Otomasyon" />
+        )}
+        {can('custom_field.read') && (
+          <NavItem href="/custom-fields" label="Özel Alanlar" />
+        )}
         {can('audit.read') && <NavItem href="/audit" label="Denetim" />}
+        {can('role.read') && <NavItem href="/roles" label="Roller" />}
         {can('platform.tenant.manage') && (
           <NavItem href="/tenants" label="Tenant'lar" />
         )}
