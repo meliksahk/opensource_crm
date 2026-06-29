@@ -66,7 +66,7 @@ export default function ReportsPage() {
   });
 
   return (
-    <DashboardTemplate title="Raporlar">
+    <DashboardTemplate title="page.reports">
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
           label="Açık anlaşma"

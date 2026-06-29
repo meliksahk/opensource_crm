@@ -4,12 +4,14 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { Button } from '../atoms/Button';
 import { Card } from '../atoms/Card';
 import { FormField } from '../molecules/FormField';
 
 export function LoginForm() {
   const { login } = useAuth();
+  const { t } = useI18n();
   const router = useRouter();
   const [email, setEmail] = useState('admin@crm.dev');
   const [password, setPassword] = useState('');
@@ -27,7 +29,7 @@ export function LoginForm() {
       const msg =
         axios.isAxiosError(err) && err.response?.data?.error?.message
           ? err.response.data.error.message
-          : 'Giriş başarısız';
+          : t('login.error');
       setError(msg);
     } finally {
       setBusy(false);
@@ -39,11 +41,11 @@ export function LoginForm() {
       <h1 className="mb-1 text-xl font-semibold text-gray-900">
         Açık Kaynak CRM
       </h1>
-      <p className="mb-6 text-sm text-gray-500">Hesabınızla giriş yapın</p>
+      <p className="mb-6 text-sm text-gray-500">{t('login.title')}</p>
       <form onSubmit={onSubmit} className="space-y-4">
         <FormField
           id="email"
-          label="E-posta"
+          label={t('login.email')}
           type="email"
           autoComplete="username"
           value={email}
@@ -52,7 +54,7 @@ export function LoginForm() {
         />
         <FormField
           id="password"
-          label="Parola"
+          label={t('login.password')}
           type="password"
           autoComplete="current-password"
           value={password}
@@ -61,7 +63,7 @@ export function LoginForm() {
         />
         {error && <p className="text-sm text-red-600">{error}</p>}
         <Button type="submit" className="w-full" disabled={busy}>
-          {busy ? 'Giriş yapılıyor…' : 'Giriş yap'}
+          {busy ? '…' : t('login.submit')}
         </Button>
       </form>
     </Card>

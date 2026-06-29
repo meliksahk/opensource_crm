@@ -37,7 +37,7 @@ export default function RolesPage() {
   ];
 
   return (
-    <DashboardTemplate title="Roller & İzinler">
+    <DashboardTemplate title="page.roles">
       {can('role.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni rol</Button>

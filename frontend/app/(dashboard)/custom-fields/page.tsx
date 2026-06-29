@@ -38,7 +38,7 @@ export default function CustomFieldsPage() {
   ];
 
   return (
-    <DashboardTemplate title="Özel Alanlar">
+    <DashboardTemplate title="page.customFields">
       {manage && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni alan</Button>

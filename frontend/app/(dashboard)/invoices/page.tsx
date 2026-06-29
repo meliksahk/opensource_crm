@@ -154,7 +154,7 @@ export default function InvoicesPage() {
   ];
 
   return (
-    <DashboardTemplate title="Faturalar">
+    <DashboardTemplate title="page.invoices">
       {!financial && (
         <p className="mb-3 text-xs text-amber-600">
           Finansal görüntüleme yetkiniz yok — tutarlar API tarafında maskelenir.

@@ -56,7 +56,7 @@ export default function AutomationPage() {
   ];
 
   return (
-    <DashboardTemplate title="Otomasyon Kuralları">
+    <DashboardTemplate title="page.automation">
       {manage && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni kural</Button>

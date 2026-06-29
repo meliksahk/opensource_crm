@@ -50,7 +50,7 @@ export default function AiPage() {
       : 'İşlem başarısız.';
 
   return (
-    <DashboardTemplate title="AI Asistan">
+    <DashboardTemplate title="page.ai">
       {status.data && !status.data.enabled && (
         <Card className="mb-4 border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
           AI devre dışı: <code>ANTHROPIC_API_KEY</code> tanımlı değil. Uçlar 503

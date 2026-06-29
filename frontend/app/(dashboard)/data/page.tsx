@@ -41,7 +41,7 @@ export default function DataPage() {
   });
 
   return (
-    <DashboardTemplate title="Veri">
+    <DashboardTemplate title="page.data">
       {can('data.export') && (
         <Card className="mb-4 p-4">
           <h3 className="mb-2 text-sm font-semibold text-gray-700">

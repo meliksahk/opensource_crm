@@ -89,7 +89,7 @@ export default function LeadsPage() {
   ];
 
   return (
-    <DashboardTemplate title="Lead'ler (nitelenmemiş)">
+    <DashboardTemplate title="page.leads">
       {can('lead.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni lead</Button>

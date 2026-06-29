@@ -56,7 +56,7 @@ export default function AuditPage() {
   ];
 
   return (
-    <DashboardTemplate title="Denetim Kaydı">
+    <DashboardTemplate title="page.audit">
       {logs.isLoading ? (
         <Spinner />
       ) : (

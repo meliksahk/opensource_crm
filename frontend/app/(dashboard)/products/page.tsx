@@ -67,7 +67,7 @@ export default function ProductsPage() {
   ];
 
   return (
-    <DashboardTemplate title="Ürünler">
+    <DashboardTemplate title="page.products">
       {can('product.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni ürün</Button>

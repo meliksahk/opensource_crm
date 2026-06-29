@@ -3,6 +3,7 @@
 // Yeniden kullanılabilir CRUD formu (oluştur/düzenle/sil). Alan tanımıyla beslenir.
 // Yalnız dolu alanlar gönderilir (boş = değişiklik yok / opsiyonel atlanır).
 import { useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 import { Modal } from '../molecules/Modal';
 import { FormField } from '../molecules/FormField';
 import { Textarea } from '../atoms/Textarea';
@@ -29,7 +30,7 @@ export function CrudFormModal({
   title,
   fields,
   initial = {},
-  submitLabel = 'Kaydet',
+  submitLabel,
   onClose,
   onSubmit,
   onDelete,
@@ -42,6 +43,7 @@ export function CrudFormModal({
   onSubmit: (values: Record<string, string>) => Promise<void>;
   onDelete?: () => Promise<void>;
 }) {
+  const { t } = useI18n();
   const [vals, setVals] = useState<Record<string, string>>(() => {
     const o: Record<string, string> = {};
     for (const f of fields) o[f.key] = initial[f.key] ?? '';
@@ -67,7 +69,7 @@ export function CrudFormModal({
       await onSubmit(payload);
       onClose();
     } catch {
-      setErr('İşlem başarısız — alanları ve yetkinizi kontrol edin.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -82,7 +84,7 @@ export function CrudFormModal({
       await onDelete();
       onClose();
     } catch {
-      setErr('Silinemedi — yetki ya da ilişki kısıtı olabilir.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -151,15 +153,15 @@ export function CrudFormModal({
       <div className="mt-4 flex items-center justify-between">
         <div className="flex gap-2">
           <Button disabled={busy || missing} onClick={submit}>
-            {busy ? '…' : submitLabel}
+            {busy ? '…' : (submitLabel ?? t('common.save'))}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            Vazgeç
+            {t('common.cancel')}
           </Button>
         </div>
         {onDelete && (
           <Button variant="danger" disabled={busy} onClick={del}>
-            Sil
+            {t('common.delete')}
           </Button>
         )}
       </div>

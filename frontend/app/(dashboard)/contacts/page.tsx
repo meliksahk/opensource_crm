@@ -61,7 +61,7 @@ export default function ContactsPage() {
   ];
 
   return (
-    <DashboardTemplate title="Kişiler">
+    <DashboardTemplate title="page.contacts">
       {can('contact.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni kişi</Button>

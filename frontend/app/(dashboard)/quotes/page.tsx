@@ -177,7 +177,7 @@ export default function QuotesPage() {
   ];
 
   return (
-    <DashboardTemplate title="Teklifler">
+    <DashboardTemplate title="page.quotes">
       {can('quote.create') && (
         <Card className="mb-4 p-4">
           <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">

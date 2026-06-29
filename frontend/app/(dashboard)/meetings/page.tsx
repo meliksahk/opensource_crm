@@ -60,7 +60,7 @@ export default function MeetingsPage() {
   ];
 
   return (
-    <DashboardTemplate title="Toplantılar">
+    <DashboardTemplate title="page.meetings">
       {can('meeting.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni toplantı</Button>

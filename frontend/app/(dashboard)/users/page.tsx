@@ -68,7 +68,7 @@ export default function UsersPage() {
   ];
 
   return (
-    <DashboardTemplate title="Kullanıcılar">
+    <DashboardTemplate title="page.users">
       {can('user.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni kullanıcı</Button>

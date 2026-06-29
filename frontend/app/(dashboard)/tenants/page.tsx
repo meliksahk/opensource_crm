@@ -51,7 +51,7 @@ export default function TenantsPage() {
   ];
 
   return (
-    <DashboardTemplate title="Tenant'lar (Platform)">
+    <DashboardTemplate title="page.tenants">
       <Card className="mb-4 p-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <FormField

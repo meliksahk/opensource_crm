@@ -88,7 +88,7 @@ export default function DealsPage() {
   });
 
   return (
-    <DashboardTemplate title="Satış (Deal) — Kanban">
+    <DashboardTemplate title="page.deals">
       {can('deal.create') && pipelines.data && firstStage && (
         <Card className="mb-4 p-4">
           <div className="mb-3 flex items-center justify-between">

@@ -43,7 +43,7 @@ function SearchResults() {
   });
 
   return (
-    <DashboardTemplate title={`Arama: "${q}"`}>
+    <DashboardTemplate title="page.search">
       {res.isLoading ? (
         <Spinner />
       ) : (

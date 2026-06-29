@@ -47,7 +47,7 @@ export default function CompaniesPage() {
   ];
 
   return (
-    <DashboardTemplate title="Şirketler">
+    <DashboardTemplate title="page.companies">
       {can('company.create') && (
         <div className="mb-4">
           <Button onClick={() => setCreating(true)}>+ Yeni şirket</Button>
