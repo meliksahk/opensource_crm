@@ -46,12 +46,34 @@ services:
       - '8025:8025' # web arayüzü (yakalanan e-postalar)
     networks: [internal]
 
-# NOT: Frontend (Next.js) henüz uygulanmadı (proje şu an API-first backend).
-# Frontend modülü gelince buraya 'frontend' servisi + ./frontend/Dockerfile eklenecek.
+  # Next.js paneli. /api isteklerini sunucu tarafında backend'e proxy'ler.
+  # BACKEND_URL build anında baked olur (Next rewrites) — bu yüzden build arg.
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:3000
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - '3001:3001'
+    networks: [internal]
+
+  # Cloudflare hızlı tüneli — paneli internetten erişilebilir kılar.
+  # restart: unless-stopped → oturum/teardown'dan bağımsız ayakta kalır.
+  # URL'i loglardan oku: docker compose logs tunnel | grep trycloudflare
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://frontend:3001
+    depends_on:
+      - frontend
+    networks: [internal]
 
 volumes:
   db_data:
 
 networks:
-  internal: # db + backend (dış erişim yok)
-  web: # frontend + ters proxy (ileride)
+  internal: # db + backend + frontend + tunnel (paylaşılan iç ağ)
+  web: # ters proxy (ileride)

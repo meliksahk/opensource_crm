@@ -24,6 +24,9 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/package.json ./package.json
+# tsconfig + src: seed script'i (ts-node) için gerekir (seed.ts, src'den sabit import eder).
+COPY --from=build /app/tsconfig*.json ./
+COPY --from=build /app/src ./src
 # app kullanıcısı engine cache vb. yazabilsin (migrate deploy için).
 RUN chown -R app:app /app
 USER app

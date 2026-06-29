@@ -206,9 +206,18 @@ Detaylı v2 planı: [`docs/11-v2-fazlar.md`](./docs/11-v2-fazlar.md) · pazar ka
 
 ```bash
 cp .env.example .env            # KÖK .env: POSTGRES_* + JWT secret'ları doldur
-docker compose up -d --build    # db (iç ağ) + backend (:3000)
-# Backend başlangıçta migration'ları uygular. Sağlık: /api/v1/health
+docker compose -p crm up -d --build   # db + backend(:3000) + frontend(:3001) + mailhog(:8025) + tunnel
+# Backend başlangıçta migration'ları uygular. Panel: http://localhost:3001 · Sağlık: /api/v1/health
+docker compose -p crm exec backend npm run seed        # roller+izinler+admin+pipeline
+docker compose -p crm exec backend npm run seed:demo   # rol bazlı test kullanıcıları + örnek veri
+# Paylaşılabilir tünel adresi (Cloudflare quick tunnel):
+docker compose -p crm logs tunnel | grep trycloudflare
 ```
+
+> Tüm servisler `restart: unless-stopped` ile çalışır → terminal/oturum kapansa da
+> ayakta kalır. `frontend` `/api`'yi container içi ağda `backend:3000`'e proxy'ler
+> (BACKEND_URL build arg ile baked). Tünel ücretsiz olduğundan container yeniden
+> başlatılınca adres değişir; sabit adres için adlandırılmış Cloudflare tüneli kullanın.
 
 ### Seçenek B — Backend lokalde, yalnız DB Docker'da
 
