@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { PERMISSION_GROUPS } from '@/lib/permissions';
 import { Modal } from '../molecules/Modal';
 import { FormField } from '../molecules/FormField';
@@ -25,6 +26,7 @@ export function RoleModal({
   onSaved: () => void;
 }) {
   const { can } = useAuth();
+  const { t } = useI18n();
   const isNew = role === null;
   const [name, setName] = useState(role?.name ?? '');
   const [description, setDescription] = useState(role?.description ?? '');
@@ -62,7 +64,7 @@ export function RoleModal({
       onSaved();
       onClose();
     } catch {
-      setErr('Kaydedilemedi — ad biçimi (BÜYÜK_HARF) ve yetki kontrolü.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -70,7 +72,7 @@ export function RoleModal({
 
   const del = async () => {
     if (!role) return;
-    if (!confirm(`${role.name} rolü silinsin mi?`)) return;
+    if (!confirm(`${role.name} — ${t('common.delete')}?`)) return;
     setBusy(true);
     setErr(null);
     try {
@@ -78,33 +80,36 @@ export function RoleModal({
       onSaved();
       onClose();
     } catch {
-      setErr('Silinemedi — role atanmış kullanıcılar olabilir.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <Modal title={isNew ? 'Yeni rol' : `Rol: ${role.name}`} onClose={onClose}>
+    <Modal
+      title={isNew ? t('role.newTitle') : `${t('role.editPrefix')}: ${role.name}`}
+      onClose={onClose}
+    >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <FormField
           id="r-name"
-          label="Ad (BÜYÜK_HARF) *"
-          placeholder="SUPPORT"
+          label={`${t('role.nameLabel')} *`}
+          placeholder={t('role.namePh')}
           value={name}
           disabled={!isNew}
           onChange={(e) => setName(e.target.value.toUpperCase())}
         />
         <FormField
           id="r-desc"
-          label="Açıklama"
+          label={t('field.description')}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
 
       <p className="mb-2 mt-4 text-sm font-medium text-gray-600">
-        İzinler ({perms.length})
+        {t('role.permissions')} ({perms.length})
       </p>
       <div className="max-h-72 space-y-3 overflow-y-auto rounded-md border border-gray-100 p-3">
         {PERMISSION_GROUPS.map((g) => (
@@ -138,15 +143,15 @@ export function RoleModal({
       <div className="mt-4 flex items-center justify-between">
         <div className="flex gap-2">
           <Button disabled={busy || (isNew && !name.trim())} onClick={save}>
-            {busy ? '…' : 'Kaydet'}
+            {busy ? '…' : t('common.save')}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            Vazgeç
+            {t('common.cancel')}
           </Button>
         </div>
         {!isNew && can('role.delete') && (
           <Button variant="danger" disabled={busy} onClick={del}>
-            Sil
+            {t('common.delete')}
           </Button>
         )}
       </div>

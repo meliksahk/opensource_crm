@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { DataTable, Column } from '@/components/organisms/DataTable';
 import {
@@ -16,6 +17,7 @@ import { Button } from '@/components/atoms/Button';
 
 export default function AutomationPage() {
   const { can } = useAuth();
+  const { t } = useI18n();
   const qc = useQueryClient();
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Rule | null>(null);
@@ -32,25 +34,25 @@ export default function AutomationPage() {
     qc.invalidateQueries({ queryKey: ['automation-rules'] });
 
   const columns: Column<Rule>[] = [
-    { key: 'name', header: 'Ad', render: (r) => r.name },
+    { key: 'name', header: t('col.name'), render: (r) => r.name },
     {
       key: 'trigger',
-      header: 'Tetikleyici',
+      header: t('col.trigger'),
       render: (r) => <Badge tone="blue">{r.trigger}</Badge>,
     },
     {
       key: 'actions',
-      header: 'Eylem',
-      render: (r) => `${r.actions?.length ?? 0} adet`,
+      header: t('col.actions'),
+      render: (r) => `${r.actions?.length ?? 0} ${t('common.countSuffix')}`,
     },
     {
       key: 'active',
-      header: 'Durum',
+      header: t('col.status'),
       render: (r) =>
         r.isActive ? (
-          <Badge tone="green">Aktif</Badge>
+          <Badge tone="green">{t('s.active')}</Badge>
         ) : (
-          <Badge tone="gray">Pasif</Badge>
+          <Badge tone="gray">{t('s.passive')}</Badge>
         ),
     },
   ];
@@ -59,7 +61,7 @@ export default function AutomationPage() {
     <DashboardTemplate title="page.automation">
       {manage && (
         <div className="mb-4">
-          <Button onClick={() => setCreating(true)}>+ Yeni kural</Button>
+          <Button onClick={() => setCreating(true)}>{t('btn.newRule')}</Button>
         </div>
       )}
 
@@ -69,7 +71,7 @@ export default function AutomationPage() {
         <DataTable
           columns={columns}
           rows={rules.data ?? []}
-          empty="Kural yok"
+          empty={t('common.empty')}
           onRowClick={manage ? setEditing : undefined}
         />
       )}

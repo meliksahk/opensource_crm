@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { Card } from '@/components/atoms/Card';
 import { StatCard } from '@/components/molecules/StatCard';
@@ -19,6 +20,7 @@ interface PipelineReport {
 
 export default function ReportsPage() {
   const { can } = useAuth();
+  const { t } = useI18n();
 
   const pipelineId = useQuery({
     queryKey: ['report-pipelineId'],
@@ -69,26 +71,26 @@ export default function ReportsPage() {
     <DashboardTemplate title="page.reports">
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard
-          label="Açık anlaşma"
+          label={t('rep.openDeals')}
           value={forecast.data?.openCount ?? '…'}
-          hint={`Değer: ${forecast.data?.openValue ?? '—'}`}
+          hint={`${t('rep.valuePrefix')}: ${forecast.data?.openValue ?? '—'}`}
         />
         <StatCard
-          label="Ağırlıklı forecast"
+          label={t('rep.forecast')}
           value={forecast.data?.weightedForecast ?? '…'}
-          hint="Aşama olasılığıyla"
+          hint={t('rep.forecastHint')}
         />
         {can('invoice.read_financial') && (
           <StatCard
-            label="Açık alacak"
+            label={t('rep.outstanding')}
             value={invoices.data?.outstanding ?? '…'}
-            hint={`Faturalanan: ${invoices.data?.totalInvoiced ?? '—'}`}
+            hint={`${t('rep.invoicedPrefix')}: ${invoices.data?.totalInvoiced ?? '—'}`}
           />
         )}
       </div>
 
       <h3 className="mb-2 text-sm font-semibold text-gray-700">
-        Pipeline — aşamaya göre açık anlaşmalar
+        {t('rep.pipelineTitle')}
       </h3>
       {pipeline.isLoading ? (
         <Spinner />
@@ -110,7 +112,7 @@ export default function ReportsPage() {
                     />
                   </div>
                   <span className="w-32 text-right text-xs text-gray-500">
-                    {s.openCount} adet · {s.openValue}
+                    {s.openCount} {t('common.countSuffix')} · {s.openValue}
                   </span>
                 </div>
               );

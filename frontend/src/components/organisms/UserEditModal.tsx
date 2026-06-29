@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { Modal } from '../molecules/Modal';
 import { FormField } from '../molecules/FormField';
 import { Button } from '../atoms/Button';
@@ -24,6 +25,7 @@ export function UserEditModal({
   onChanged: () => void;
 }) {
   const { can } = useAuth();
+  const { t } = useI18n();
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [active, setActive] = useState(user.isActive);
@@ -59,14 +61,14 @@ export function UserEditModal({
       onChanged();
       onClose();
     } catch {
-      setErr('Kaydedilemedi — yetki/alan kontrolü.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
   };
 
   const del = async () => {
-    if (!confirm('Kullanıcı silinsin mi?')) return;
+    if (!confirm(`${t('common.delete')}?`)) return;
     setBusy(true);
     setErr(null);
     try {
@@ -74,24 +76,24 @@ export function UserEditModal({
       onChanged();
       onClose();
     } catch {
-      setErr('Silinemedi.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <Modal title={`Kullanıcı: ${user.email}`} onClose={onClose}>
+    <Modal title={`${t('user.modalPrefix')}: ${user.email}`} onClose={onClose}>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <FormField
           id="u-first"
-          label="Ad"
+          label={t('field.firstName')}
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
         />
         <FormField
           id="u-last"
-          label="Soyad"
+          label={t('field.lastName')}
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
         />
@@ -103,12 +105,12 @@ export function UserEditModal({
           checked={active}
           onChange={(e) => setActive(e.target.checked)}
         />
-        Aktif
+        {t('common.active')}
       </label>
 
       {can('role.assign') && (
         <div className="mt-3">
-          <p className="mb-1 text-sm font-medium text-gray-600">Roller</p>
+          <p className="mb-1 text-sm font-medium text-gray-600">{t('col.roles')}</p>
           <div className="flex flex-wrap gap-3">
             {(roles.data ?? []).map((r) => (
               <label
@@ -130,15 +132,15 @@ export function UserEditModal({
       <div className="mt-4 flex items-center justify-between">
         <div className="flex gap-2">
           <Button disabled={busy} onClick={save}>
-            {busy ? '…' : 'Kaydet'}
+            {busy ? '…' : t('common.save')}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            Vazgeç
+            {t('common.cancel')}
           </Button>
         </div>
         {can('user.delete') && (
           <Button variant="danger" disabled={busy} onClick={del}>
-            Sil
+            {t('common.delete')}
           </Button>
         )}
       </div>

@@ -2,6 +2,7 @@
 // src/components/organisms/CustomFieldModal.tsx — özel alan tanımı oluştur/düzenle/sil.
 import { useState } from 'react';
 import { api } from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 import { Modal } from '../molecules/Modal';
 import { FormField } from '../molecules/FormField';
 import { Textarea } from '../atoms/Textarea';
@@ -29,6 +30,7 @@ export function CustomFieldModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useI18n();
   const isNew = def === null;
   const [entity, setEntity] = useState(def?.entity ?? 'DEAL');
   const [key, setKey] = useState(def?.key ?? '');
@@ -68,7 +70,7 @@ export function CustomFieldModal({
       onSaved();
       onClose();
     } catch {
-      setErr('Kaydedilemedi — key biçimi (a-z0-9_) ya da çift kayıt olabilir.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -76,7 +78,7 @@ export function CustomFieldModal({
 
   const del = async () => {
     if (!def) return;
-    if (!confirm('Özel alan silinsin mi?')) return;
+    if (!confirm(`${t('common.delete')}?`)) return;
     setBusy(true);
     setErr(null);
     try {
@@ -84,7 +86,7 @@ export function CustomFieldModal({
       onSaved();
       onClose();
     } catch {
-      setErr('Silinemedi.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -93,11 +95,14 @@ export function CustomFieldModal({
   const showOptions = (isNew ? type : def?.type) === 'SELECT';
 
   return (
-    <Modal title={isNew ? 'Yeni özel alan' : `Özel alan: ${def.key}`} onClose={onClose}>
+    <Modal
+      title={isNew ? t('cf.newTitle') : `${t('cf.editPrefix')}: ${def.key}`}
+      onClose={onClose}
+    >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-600">
-            Varlık {isNew ? '*' : '(değişmez)'}
+            {t('cf.entity')} {isNew ? '*' : t('cf.immutable')}
           </label>
           <select
             value={entity}
@@ -114,21 +119,21 @@ export function CustomFieldModal({
         </div>
         <FormField
           id="cf-key"
-          label={`Anahtar ${isNew ? '*' : '(değişmez)'}`}
-          placeholder="industry_segment"
+          label={`${t('cf.key')} ${isNew ? '*' : t('cf.immutable')}`}
+          placeholder={t('cf.keyPh')}
           value={key}
           disabled={!isNew}
           onChange={(e) => setKey(e.target.value)}
         />
         <FormField
           id="cf-label"
-          label="Etiket *"
+          label={`${t('cf.label')} *`}
           value={label}
           onChange={(e) => setLabel(e.target.value)}
         />
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-600">
-            Tip {isNew ? '*' : '(değişmez)'}
+            {t('cf.type')} {isNew ? '*' : t('cf.immutable')}
           </label>
           <select
             value={type}
@@ -148,7 +153,7 @@ export function CustomFieldModal({
       {showOptions && (
         <div className="mt-3">
           <label className="mb-1 block text-sm font-medium text-gray-600">
-            SELECT seçenekleri (her satır / virgül bir seçenek)
+            {t('cf.options')}
           </label>
           <Textarea
             rows={3}
@@ -165,7 +170,7 @@ export function CustomFieldModal({
           checked={required}
           onChange={(e) => setRequired(e.target.checked)}
         />
-        Zorunlu alan
+        {t('cf.requiredField')}
       </label>
 
       <div className="mt-4 flex items-center justify-between">
@@ -174,15 +179,15 @@ export function CustomFieldModal({
             disabled={busy || (isNew && (!key.trim() || !label.trim()))}
             onClick={save}
           >
-            {busy ? '…' : 'Kaydet'}
+            {busy ? '…' : t('common.save')}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            Vazgeç
+            {t('common.cancel')}
           </Button>
         </div>
         {!isNew && (
           <Button variant="danger" disabled={busy} onClick={del}>
-            Sil
+            {t('common.delete')}
           </Button>
         )}
       </div>

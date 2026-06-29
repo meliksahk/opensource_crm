@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { DataTable, Column } from '@/components/organisms/DataTable';
 import { CustomFieldModal, FieldDef } from '@/components/organisms/CustomFieldModal';
@@ -13,6 +14,7 @@ import { Button } from '@/components/atoms/Button';
 
 export default function CustomFieldsPage() {
   const { can } = useAuth();
+  const { t } = useI18n();
   const qc = useQueryClient();
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<FieldDef | null>(null);
@@ -26,14 +28,14 @@ export default function CustomFieldsPage() {
   const invalidate = () => qc.invalidateQueries({ queryKey: ['custom-fields'] });
 
   const columns: Column<FieldDef>[] = [
-    { key: 'entity', header: 'Varlık', render: (r) => <Badge tone="indigo">{r.entity}</Badge> },
-    { key: 'key', header: 'Anahtar', render: (r) => r.key },
-    { key: 'label', header: 'Etiket', render: (r) => r.label },
-    { key: 'type', header: 'Tip', render: (r) => r.type },
+    { key: 'entity', header: t('col.entity'), render: (r) => <Badge tone="indigo">{r.entity}</Badge> },
+    { key: 'key', header: t('col.key'), render: (r) => r.key },
+    { key: 'label', header: t('col.label'), render: (r) => r.label },
+    { key: 'type', header: t('col.type'), render: (r) => r.type },
     {
       key: 'required',
-      header: 'Zorunlu',
-      render: (r) => (r.required ? <Badge tone="amber">Evet</Badge> : '—'),
+      header: t('col.required'),
+      render: (r) => (r.required ? <Badge tone="amber">{t('s.yes')}</Badge> : '—'),
     },
   ];
 
@@ -41,7 +43,7 @@ export default function CustomFieldsPage() {
     <DashboardTemplate title="page.customFields">
       {manage && (
         <div className="mb-4">
-          <Button onClick={() => setCreating(true)}>+ Yeni alan</Button>
+          <Button onClick={() => setCreating(true)}>{t('btn.newField')}</Button>
         </div>
       )}
 
@@ -51,7 +53,7 @@ export default function CustomFieldsPage() {
         <DataTable
           columns={columns}
           rows={defs.data ?? []}
-          empty="Özel alan yok"
+          empty={t('common.empty')}
           onRowClick={manage ? setEditing : undefined}
         />
       )}

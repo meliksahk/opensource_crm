@@ -236,6 +236,77 @@ export const en: Dict = {
   'auto.addAction': '+ Action',
   'auto.remove': 'Remove',
   'common.active': 'Active',
+  'common.countSuffix': 'items',
+  'col.method': 'Action',
+  // Reports
+  'rep.openDeals': 'Open deals',
+  'rep.valuePrefix': 'Value',
+  'rep.forecast': 'Weighted forecast',
+  'rep.forecastHint': 'By stage probability',
+  'rep.outstanding': 'Outstanding',
+  'rep.invoicedPrefix': 'Invoiced',
+  'rep.pipelineTitle': 'Pipeline — open deals by stage',
+  // AI
+  'ai.disabledMsg':
+    'AI disabled: ANTHROPIC_API_KEY is not set. Endpoints return 503. Features enable automatically once a key is added.',
+  'ai.enabledPrefix': 'AI enabled · model:',
+  'ai.draftTitle': 'Follow-up email draft',
+  'ai.draftPh': 'Context: e.g. follow-up after a price quote…',
+  'ai.toneProfessional': 'Professional',
+  'ai.toneFriendly': 'Friendly',
+  'ai.toneFormal': 'Formal',
+  'ai.draftBtn': 'Generate draft',
+  'ai.sumTitle': 'Summarize text',
+  'ai.sumPh': 'Notes, call transcript…',
+  'ai.sumBtn': 'Summarize',
+  'ai.err503': 'AI not configured (ANTHROPIC_API_KEY missing) or temporarily unavailable.',
+  'ai.errGeneric': 'Operation failed.',
+  // Data
+  'data.exportTitle': 'CSV export',
+  'data.importTitle': 'CSV import (with dedup)',
+  'data.headerContacts': 'Header: firstName,lastName,email,phone,title',
+  'data.headerCompanies': 'Header: name,domain,industry,phone,website',
+  'data.placeholder': 'Paste CSV content (first row is the header)',
+  'data.importBtn': 'Import',
+  'data.created': 'Created',
+  'data.skipped': 'Skipped (dedup)',
+  'data.errors': 'Errors',
+  'data.importError': 'Import failed.',
+  'data.entityContacts': 'Contacts',
+  'data.entityCompanies': 'Companies',
+  'data.entityDeals': 'Deals',
+  // Quote / invoice
+  'q.create': 'Create quote',
+  'inv.financialWarn':
+    'You lack financial view permission — amounts are masked at the API.',
+  'inv.paymentTitle': 'Add payment',
+  'inv.savePayment': 'Save payment',
+  // Automation modal
+  'auto.newTitle': 'New automation rule',
+  'auto.editPrefix': 'Rule',
+  'auto.notePh': 'Note',
+  'auto.templatePh': 'Template (e.g. welcome)',
+  'auto.toPh': 'Recipient email',
+  'auto.condFieldPh': 'status',
+  'auto.condEqualsPh': 'WON',
+  // Custom field modal
+  'cf.newTitle': 'New custom field',
+  'cf.editPrefix': 'Custom field',
+  'cf.key': 'Key',
+  'cf.label': 'Label',
+  'cf.type': 'Type',
+  'cf.keyPh': 'industry_segment',
+  // Role modal
+  'role.newTitle': 'New role',
+  'role.editPrefix': 'Role',
+  'role.namePh': 'SUPPORT',
+  // Tenants
+  'tenant.slugLabel': 'Slug (a-z0-9-)',
+  'tenant.create': 'Create tenant',
+  'tenant.createError': 'Failed (slug?).',
+  // User edit
+  'user.modalPrefix': 'User',
+  'deal.noPipeline': 'No pipeline found.',
 };
 
 // --- Türkçe ---
@@ -454,6 +525,78 @@ export const tr: Dict = {
   'auto.addAction': '+ Eylem',
   'auto.remove': 'Kaldır',
   'common.active': 'Aktif',
+  'common.countSuffix': 'adet',
+  'col.method': 'Eylem',
+  // Raporlar
+  'rep.openDeals': 'Açık anlaşma',
+  'rep.valuePrefix': 'Değer',
+  'rep.forecast': 'Ağırlıklı forecast',
+  'rep.forecastHint': 'Aşama olasılığıyla',
+  'rep.outstanding': 'Açık alacak',
+  'rep.invoicedPrefix': 'Faturalanan',
+  'rep.pipelineTitle': 'Pipeline — aşamaya göre açık anlaşmalar',
+  // AI
+  'ai.disabledMsg':
+    'AI devre dışı: ANTHROPIC_API_KEY tanımlı değil. Uçlar 503 döner. Anahtar eklenince özellikler otomatik etkinleşir.',
+  'ai.enabledPrefix': 'AI etkin · model:',
+  'ai.draftTitle': 'Takip e-postası taslağı',
+  'ai.draftPh': 'Bağlam: ör. fiyat teklifi sonrası takip…',
+  'ai.toneProfessional': 'Profesyonel',
+  'ai.toneFriendly': 'Samimi',
+  'ai.toneFormal': 'Resmî',
+  'ai.draftBtn': 'Taslak üret',
+  'ai.sumTitle': 'Metin özetle',
+  'ai.sumPh': 'Notlar, görüşme dökümü…',
+  'ai.sumBtn': 'Özetle',
+  'ai.err503':
+    'AI yapılandırılmadı (ANTHROPIC_API_KEY eksik) ya da geçici olarak kullanılamıyor.',
+  'ai.errGeneric': 'İşlem başarısız.',
+  // Veri
+  'data.exportTitle': 'CSV dışa aktar',
+  'data.importTitle': 'CSV içe aktar (dedup ile)',
+  'data.headerContacts': 'Başlık: firstName,lastName,email,phone,title',
+  'data.headerCompanies': 'Başlık: name,domain,industry,phone,website',
+  'data.placeholder': 'CSV içeriğini yapıştırın (ilk satır başlık)',
+  'data.importBtn': 'İçe aktar',
+  'data.created': 'Oluşturulan',
+  'data.skipped': 'Atlanan (dedup)',
+  'data.errors': 'Hata',
+  'data.importError': 'İçe aktarma başarısız.',
+  'data.entityContacts': 'Kişiler',
+  'data.entityCompanies': 'Şirketler',
+  'data.entityDeals': 'Anlaşmalar',
+  // Teklif / fatura
+  'q.create': 'Teklif oluştur',
+  'inv.financialWarn':
+    'Finansal görüntüleme yetkiniz yok — tutarlar API tarafında maskelenir.',
+  'inv.paymentTitle': 'Ödeme ekle',
+  'inv.savePayment': 'Ödemeyi kaydet',
+  // Otomasyon modal
+  'auto.newTitle': 'Yeni otomasyon kuralı',
+  'auto.editPrefix': 'Kural',
+  'auto.notePh': 'Not',
+  'auto.templatePh': 'Şablon (ör. welcome)',
+  'auto.toPh': 'Alıcı e-posta',
+  'auto.condFieldPh': 'status',
+  'auto.condEqualsPh': 'WON',
+  // Özel alan modal
+  'cf.newTitle': 'Yeni özel alan',
+  'cf.editPrefix': 'Özel alan',
+  'cf.key': 'Anahtar',
+  'cf.label': 'Etiket',
+  'cf.type': 'Tip',
+  'cf.keyPh': 'industry_segment',
+  // Rol modal
+  'role.newTitle': 'Yeni rol',
+  'role.editPrefix': 'Rol',
+  'role.namePh': 'SUPPORT',
+  // Tenant
+  'tenant.slugLabel': 'Slug (a-z0-9-)',
+  'tenant.create': 'Tenant oluştur',
+  'tenant.createError': 'Oluşturulamadı (slug?).',
+  // Kullanıcı düzenle
+  'user.modalPrefix': 'Kullanıcı',
+  'deal.noPipeline': 'Pipeline bulunamadı.',
 };
 
 const BUILTIN: Record<string, { name: string; dict: Dict }> = {

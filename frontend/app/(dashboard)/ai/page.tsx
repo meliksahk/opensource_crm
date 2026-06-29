@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { Card } from '@/components/atoms/Card';
 import { Button } from '@/components/atoms/Button';
@@ -20,6 +21,7 @@ interface Summary {
 }
 
 export default function AiPage() {
+  const { t } = useI18n();
   const status = useQuery({
     queryKey: ['ai-status'],
     queryFn: async () =>
@@ -46,20 +48,19 @@ export default function AiPage() {
 
   const errMsg = (e: unknown) =>
     (e as { response?: { status?: number } })?.response?.status === 503
-      ? 'AI yapılandırılmadı (ANTHROPIC_API_KEY eksik) ya da geçici olarak kullanılamıyor.'
-      : 'İşlem başarısız.';
+      ? t('ai.err503')
+      : t('ai.errGeneric');
 
   return (
     <DashboardTemplate title="page.ai">
       {status.data && !status.data.enabled && (
         <Card className="mb-4 border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
-          AI devre dışı: <code>ANTHROPIC_API_KEY</code> tanımlı değil. Uçlar 503
-          döner. Anahtar eklenince özellikler otomatik etkinleşir.
+          {t('ai.disabledMsg')}
         </Card>
       )}
       {status.data?.enabled && (
         <Card className="mb-4 border-emerald-300 bg-emerald-50 p-3 text-sm text-emerald-800">
-          AI etkin · model: <code>{status.data.model}</code>
+          {t('ai.enabledPrefix')} <code>{status.data.model}</code>
         </Card>
       )}
 
@@ -67,11 +68,11 @@ export default function AiPage() {
         {/* E-posta taslağı */}
         <Card className="p-4">
           <h3 className="mb-2 text-sm font-semibold text-gray-700">
-            Takip e-postası taslağı
+            {t('ai.draftTitle')}
           </h3>
           <Textarea
             rows={4}
-            placeholder="Bağlam: ör. fiyat teklifi sonrası takip..."
+            placeholder={t('ai.draftPh')}
             value={context}
             onChange={(e) => setContext(e.target.value)}
             className="mb-2"
@@ -82,15 +83,15 @@ export default function AiPage() {
               onChange={(e) => setTone(e.target.value)}
               className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
             >
-              <option value="professional">Profesyonel</option>
-              <option value="friendly">Samimi</option>
-              <option value="formal">Resmî</option>
+              <option value="professional">{t('ai.toneProfessional')}</option>
+              <option value="friendly">{t('ai.toneFriendly')}</option>
+              <option value="formal">{t('ai.toneFormal')}</option>
             </select>
             <Button
               onClick={() => draft.mutate()}
               disabled={draft.isPending || context.trim().length < 3}
             >
-              {draft.isPending ? 'Üretiliyor…' : 'Taslak üret'}
+              {draft.isPending ? '…' : t('ai.draftBtn')}
             </Button>
           </div>
           {draft.isPending && <Spinner />}
@@ -110,11 +111,11 @@ export default function AiPage() {
         {/* Özetleme */}
         <Card className="p-4">
           <h3 className="mb-2 text-sm font-semibold text-gray-700">
-            Metin özetle
+            {t('ai.sumTitle')}
           </h3>
           <Textarea
             rows={4}
-            placeholder="Notlar, görüşme dökümü..."
+            placeholder={t('ai.sumPh')}
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="mb-2"
@@ -123,7 +124,7 @@ export default function AiPage() {
             onClick={() => summary.mutate()}
             disabled={summary.isPending || text.trim().length < 3}
           >
-            {summary.isPending ? 'Özetleniyor…' : 'Özetle'}
+            {summary.isPending ? '…' : t('ai.sumBtn')}
           </Button>
           {summary.isPending && <Spinner />}
           {summary.isError && (

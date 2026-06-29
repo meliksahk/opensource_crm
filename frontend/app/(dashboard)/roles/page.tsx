@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { DataTable, Column } from '@/components/organisms/DataTable';
 import { RoleModal, Role } from '@/components/organisms/RoleModal';
@@ -13,6 +14,7 @@ import { Button } from '@/components/atoms/Button';
 
 export default function RolesPage() {
   const { can } = useAuth();
+  const { t } = useI18n();
   const qc = useQueryClient();
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Role | null>(null);
@@ -27,11 +29,11 @@ export default function RolesPage() {
   };
 
   const columns: Column<Role>[] = [
-    { key: 'name', header: 'Rol', render: (r) => <Badge tone="indigo">{r.name}</Badge> },
-    { key: 'description', header: 'Açıklama', render: (r) => r.description ?? '—' },
+    { key: 'name', header: t('col.role'), render: (r) => <Badge tone="indigo">{r.name}</Badge> },
+    { key: 'description', header: t('col.description'), render: (r) => r.description ?? '—' },
     {
       key: 'perms',
-      header: 'İzin sayısı',
+      header: t('col.permCount'),
       render: (r) => `${r.permissions.length}`,
     },
   ];
@@ -40,7 +42,7 @@ export default function RolesPage() {
     <DashboardTemplate title="page.roles">
       {can('role.create') && (
         <div className="mb-4">
-          <Button onClick={() => setCreating(true)}>+ Yeni rol</Button>
+          <Button onClick={() => setCreating(true)}>{t('btn.newRole')}</Button>
         </div>
       )}
 
@@ -50,7 +52,7 @@ export default function RolesPage() {
         <DataTable
           columns={columns}
           rows={roles.data ?? []}
-          empty="Rol yok"
+          empty={t('common.empty')}
           onRowClick={can('role.update') ? setEditing : undefined}
         />
       )}

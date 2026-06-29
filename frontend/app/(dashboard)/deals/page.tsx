@@ -190,7 +190,7 @@ export default function DealsPage() {
           }
         />
       ) : (
-        <p className="text-sm text-gray-500">Pipeline bulunamadı.</p>
+        <p className="text-sm text-gray-500">{t('deal.noPipeline')}</p>
       )}
 
       {selected && board.data && (

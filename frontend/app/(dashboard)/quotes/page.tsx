@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { DataTable, Column } from '@/components/organisms/DataTable';
 import { Card } from '@/components/atoms/Card';
@@ -44,6 +45,7 @@ const STATUS_TONE: Record<string, Tone> = {
 
 export default function QuotesPage() {
   const { can } = useAuth();
+  const { t } = useI18n();
   const qc = useQueryClient();
   const [customerName, setCustomerName] = useState('');
   const [taxRate, setTaxRate] = useState('20');
@@ -105,23 +107,23 @@ export default function QuotesPage() {
     setLines(lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
 
   const columns: Column<Quote>[] = [
-    { key: 'number', header: 'No', render: (r) => r.number ?? '—' },
-    { key: 'customerName', header: 'Müşteri', render: (r) => r.customerName },
+    { key: 'number', header: t('col.number'), render: (r) => r.number ?? '—' },
+    { key: 'customerName', header: t('col.customer'), render: (r) => r.customerName },
     {
       key: 'total',
-      header: 'Tutar',
+      header: t('col.amount'),
       render: (r) => `${r.total} ${r.currency}`,
     },
     {
       key: 'status',
-      header: 'Durum',
+      header: t('col.status'),
       render: (r) => (
         <Badge tone={STATUS_TONE[r.status] ?? 'gray'}>{r.status}</Badge>
       ),
     },
     {
       key: 'actions',
-      header: 'İşlem',
+      header: t('col.action'),
       render: (r) => (
         <div className="flex flex-wrap gap-2">
           {r.status === 'DRAFT' && can('quote.send') && (
@@ -130,7 +132,7 @@ export default function QuotesPage() {
               className="px-2 py-1 text-xs"
               onClick={() => action.mutate({ id: r.id, verb: 'send' })}
             >
-              Gönder
+              {t('act.send')}
             </Button>
           )}
           {r.status === 'SENT' && can('quote.send') && (
@@ -140,14 +142,14 @@ export default function QuotesPage() {
                 className="px-2 py-1 text-xs"
                 onClick={() => action.mutate({ id: r.id, verb: 'accept' })}
               >
-                Kabul
+                {t('act.accept')}
               </Button>
               <Button
                 variant="ghost"
                 className="px-2 py-1 text-xs"
                 onClick={() => action.mutate({ id: r.id, verb: 'reject' })}
               >
-                Ret
+                {t('act.reject')}
               </Button>
             </>
           )}
@@ -157,7 +159,7 @@ export default function QuotesPage() {
                 className="px-2 py-1 text-xs"
                 onClick={() => action.mutate({ id: r.id, verb: 'convert' })}
               >
-                Faturala
+                {t('act.invoice')}
               </Button>
             )}
           {r.status !== 'CONVERTED' && can('quote.delete') && (
@@ -165,10 +167,10 @@ export default function QuotesPage() {
               variant="danger"
               className="px-2 py-1 text-xs"
               onClick={() => {
-                if (confirm('Teklif silinsin mi?')) del.mutate(r.id);
+                if (confirm(t('q.confirmDelete'))) del.mutate(r.id);
               }}
             >
-              Sil
+              {t('common.delete')}
             </Button>
           )}
         </div>
@@ -183,19 +185,19 @@ export default function QuotesPage() {
           <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
             <FormField
               id="q-cust"
-              label="Müşteri adı"
+              label={t('q.customerName')}
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
             />
             <FormField
               id="q-tax"
-              label="KDV %"
+              label={t('q.taxRate')}
               value={taxRate}
               onChange={(e) => setTaxRate(e.target.value)}
             />
           </div>
 
-          <p className="mb-1 text-sm font-medium text-gray-600">Kalemler</p>
+          <p className="mb-1 text-sm font-medium text-gray-600">{t('q.items')}</p>
           {lines.map((l, i) => (
             <div
               key={i}
@@ -215,7 +217,7 @@ export default function QuotesPage() {
                   });
                 }}
               >
-                <option value="">— Ürün seç (ops.) —</option>
+                <option value="">{t('q.product')}</option>
                 {products.data?.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name} ({p.unitPrice})
@@ -224,19 +226,19 @@ export default function QuotesPage() {
               </select>
               <input
                 className="rounded-md border border-gray-300 px-2 py-2 text-sm sm:col-span-4"
-                placeholder="Açıklama"
+                placeholder={t('q.description')}
                 value={l.description}
                 onChange={(e) => setLine(i, { description: e.target.value })}
               />
               <input
                 className="rounded-md border border-gray-300 px-2 py-2 text-sm sm:col-span-2"
-                placeholder="Miktar"
+                placeholder={t('q.quantity')}
                 value={l.quantity}
                 onChange={(e) => setLine(i, { quantity: e.target.value })}
               />
               <input
                 className="rounded-md border border-gray-300 px-2 py-2 text-sm sm:col-span-2"
-                placeholder="Birim fiyat"
+                placeholder={t('q.unitPrice')}
                 value={l.unitPrice}
                 onChange={(e) => setLine(i, { unitPrice: e.target.value })}
               />
@@ -259,16 +261,16 @@ export default function QuotesPage() {
                 ])
               }
             >
-              + Kalem
+              {t('btn.addItem')}
             </Button>
             <Button
               onClick={() => create.mutate()}
               disabled={create.isPending || !customerName}
             >
-              {create.isPending ? 'Oluşturuluyor…' : 'Teklif oluştur'}
+              {create.isPending ? '…' : t('q.create')}
             </Button>
             {create.isError && (
-              <span className="text-sm text-red-600">Oluşturulamadı.</span>
+              <span className="text-sm text-red-600">{t('common.error')}</span>
             )}
           </div>
         </Card>
@@ -277,7 +279,11 @@ export default function QuotesPage() {
       {quotes.isLoading ? (
         <Spinner />
       ) : (
-        <DataTable columns={columns} rows={quotes.data ?? []} empty="Teklif yok" />
+        <DataTable
+          columns={columns}
+          rows={quotes.data ?? []}
+          empty={t('common.empty')}
+        />
       )}
     </DashboardTemplate>
   );

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { Card } from '@/components/atoms/Card';
 import { Button } from '@/components/atoms/Button';
@@ -17,6 +18,7 @@ interface ImportResult {
 
 export default function DataPage() {
   const { can } = useAuth();
+  const { t } = useI18n();
   const [entity, setEntity] = useState<'contacts' | 'companies'>('contacts');
   const [csv, setCsv] = useState('');
 
@@ -45,17 +47,17 @@ export default function DataPage() {
       {can('data.export') && (
         <Card className="mb-4 p-4">
           <h3 className="mb-2 text-sm font-semibold text-gray-700">
-            CSV dışa aktar
+            {t('data.exportTitle')}
           </h3>
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={() => exportCsv('contacts')}>
-              Kişiler
+              {t('data.entityContacts')}
             </Button>
             <Button variant="secondary" onClick={() => exportCsv('companies')}>
-              Şirketler
+              {t('data.entityCompanies')}
             </Button>
             <Button variant="secondary" onClick={() => exportCsv('deals')}>
-              Anlaşmalar
+              {t('data.entityDeals')}
             </Button>
           </div>
         </Card>
@@ -64,7 +66,7 @@ export default function DataPage() {
       {can('data.import') && (
         <Card className="p-4">
           <h3 className="mb-2 text-sm font-semibold text-gray-700">
-            CSV içe aktar (dedup ile)
+            {t('data.importTitle')}
           </h3>
           <div className="mb-2 flex items-center gap-2">
             <select
@@ -74,18 +76,18 @@ export default function DataPage() {
               }
               className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
             >
-              <option value="contacts">Kişiler</option>
-              <option value="companies">Şirketler</option>
+              <option value="contacts">{t('data.entityContacts')}</option>
+              <option value="companies">{t('data.entityCompanies')}</option>
             </select>
             <span className="text-xs text-gray-500">
               {entity === 'contacts'
-                ? 'Başlık: firstName,lastName,email,phone,title'
-                : 'Başlık: name,domain,industry,phone,website'}
+                ? t('data.headerContacts')
+                : t('data.headerCompanies')}
             </span>
           </div>
           <Textarea
             rows={6}
-            placeholder="CSV içeriğini yapıştırın (ilk satır başlık)"
+            placeholder={t('data.placeholder')}
             value={csv}
             onChange={(e) => setCsv(e.target.value)}
             className="mb-2 font-mono"
@@ -94,19 +96,20 @@ export default function DataPage() {
             onClick={() => importMut.mutate()}
             disabled={importMut.isPending || csv.trim().length === 0}
           >
-            {importMut.isPending ? 'İçe aktarılıyor…' : 'İçe aktar'}
+            {importMut.isPending ? '…' : t('data.importBtn')}
           </Button>
           {importMut.data && (
             <div className="mt-2 rounded-md bg-gray-50 p-3 text-sm">
               <p className="text-gray-700">
-                Oluşturulan: {importMut.data.created} · Atlanan (dedup):{' '}
-                {importMut.data.skipped} · Hata: {importMut.data.errors.length}
+                {t('data.created')}: {importMut.data.created} ·{' '}
+                {t('data.skipped')}: {importMut.data.skipped} ·{' '}
+                {t('data.errors')}: {importMut.data.errors.length}
               </p>
               {importMut.data.errors.length > 0 && (
                 <ul className="mt-1 list-disc pl-5 text-xs text-red-600">
                   {importMut.data.errors.map((e, i) => (
                     <li key={i}>
-                      Satır {e.row}: {e.message}
+                      {e.row}: {e.message}
                     </li>
                   ))}
                 </ul>
@@ -114,7 +117,7 @@ export default function DataPage() {
             </div>
           )}
           {importMut.isError && (
-            <p className="mt-2 text-sm text-red-600">İçe aktarma başarısız.</p>
+            <p className="mt-2 text-sm text-red-600">{t('data.importError')}</p>
           )}
         </Card>
       )}

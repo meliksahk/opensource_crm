@@ -2,6 +2,7 @@
 // app/(dashboard)/audit/page.tsx — v2.9 denetim kaydı (yalnız audit.read/ADMIN).
 import { useQuery } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { DataTable, Column } from '@/components/organisms/DataTable';
 import { Spinner } from '@/components/atoms/Spinner';
@@ -25,6 +26,7 @@ const ACTION_TONE: Record<string, 'green' | 'blue' | 'red'> = {
 };
 
 export default function AuditPage() {
+  const { t } = useI18n();
   const logs = useQuery({
     queryKey: ['audit-logs'],
     queryFn: async () =>
@@ -36,21 +38,21 @@ export default function AuditPage() {
   const columns: Column<AuditLog>[] = [
     {
       key: 'createdAt',
-      header: 'Zaman',
-      render: (r) => new Date(r.createdAt).toLocaleString('tr-TR'),
+      header: t('col.time'),
+      render: (r) => new Date(r.createdAt).toLocaleString(),
     },
-    { key: 'actorEmail', header: 'Aktör', render: (r) => r.actorEmail ?? '—' },
+    { key: 'actorEmail', header: t('col.actor'), render: (r) => r.actorEmail ?? '—' },
     {
       key: 'action',
-      header: 'Eylem',
+      header: t('col.method'),
       render: (r) => (
         <Badge tone={ACTION_TONE[r.action] ?? 'gray'}>{r.action}</Badge>
       ),
     },
-    { key: 'entity', header: 'Varlık', render: (r) => r.entity },
+    { key: 'entity', header: t('col.entity'), render: (r) => r.entity },
     {
       key: 'statusCode',
-      header: 'Durum',
+      header: t('col.status'),
       render: (r) => r.statusCode,
     },
   ];
@@ -60,7 +62,11 @@ export default function AuditPage() {
       {logs.isLoading ? (
         <Spinner />
       ) : (
-        <DataTable columns={columns} rows={logs.data ?? []} empty="Kayıt yok" />
+        <DataTable
+          columns={columns}
+          rows={logs.data ?? []}
+          empty={t('common.empty')}
+        />
       )}
     </DashboardTemplate>
   );

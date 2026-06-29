@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, unwrap } from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 import { DashboardTemplate } from '@/components/templates/DashboardTemplate';
 import { DataTable, Column } from '@/components/organisms/DataTable';
 import { Card } from '@/components/atoms/Card';
@@ -20,6 +21,7 @@ interface Tenant {
 }
 
 export default function TenantsPage() {
+  const { t } = useI18n();
   const qc = useQueryClient();
   const [form, setForm] = useState({ name: '', slug: '' });
 
@@ -37,14 +39,14 @@ export default function TenantsPage() {
   });
 
   const columns: Column<Tenant>[] = [
-    { key: 'name', header: 'Ad', render: (r) => r.name },
-    { key: 'slug', header: 'Slug', render: (r) => r.slug },
+    { key: 'name', header: t('col.name'), render: (r) => r.name },
+    { key: 'slug', header: t('col.slug'), render: (r) => r.slug },
     {
       key: 'isActive',
-      header: 'Durum',
+      header: t('col.status'),
       render: (r) => (
         <Badge tone={r.isActive ? 'green' : 'gray'}>
-          {r.isActive ? 'Aktif' : 'Pasif'}
+          {r.isActive ? t('s.active') : t('s.passive')}
         </Badge>
       ),
     },
@@ -56,13 +58,13 @@ export default function TenantsPage() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <FormField
             id="t-name"
-            label="Ad"
+            label={t('field.name')}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <FormField
             id="t-slug"
-            label="Slug (a-z0-9-)"
+            label={t('tenant.slugLabel')}
             value={form.slug}
             onChange={(e) => setForm({ ...form, slug: e.target.value })}
           />
@@ -72,10 +74,12 @@ export default function TenantsPage() {
             onClick={() => create.mutate()}
             disabled={create.isPending || !form.name || !form.slug}
           >
-            {create.isPending ? 'Ekleniyor…' : 'Tenant oluştur'}
+            {create.isPending ? '…' : t('tenant.create')}
           </Button>
           {create.isError && (
-            <span className="text-sm text-red-600">Oluşturulamadı (slug?).</span>
+            <span className="text-sm text-red-600">
+              {t('tenant.createError')}
+            </span>
           )}
         </div>
       </Card>
@@ -83,7 +87,11 @@ export default function TenantsPage() {
       {tenants.isLoading ? (
         <Spinner />
       ) : (
-        <DataTable columns={columns} rows={tenants.data ?? []} empty="Tenant yok" />
+        <DataTable
+          columns={columns}
+          rows={tenants.data ?? []}
+          empty={t('common.empty')}
+        />
       )}
     </DashboardTemplate>
   );

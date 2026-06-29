@@ -2,6 +2,7 @@
 // src/components/organisms/AutomationRuleModal.tsx — otomasyon kuralı oluştur/düzenle/sil.
 import { useState } from 'react';
 import { api } from '@/lib/api';
+import { useI18n } from '@/lib/i18n';
 import { Modal } from '../molecules/Modal';
 import { FormField } from '../molecules/FormField';
 import { Button } from '../atoms/Button';
@@ -39,6 +40,7 @@ export function AutomationRuleModal({
   onClose: () => void;
   onSaved: () => void;
 }) {
+  const { t } = useI18n();
   const isNew = rule === null;
   const [name, setName] = useState(rule?.name ?? '');
   const [trigger, setTrigger] = useState(rule?.trigger ?? TRIGGERS[0]);
@@ -87,7 +89,7 @@ export function AutomationRuleModal({
       onSaved();
       onClose();
     } catch {
-      setErr('Kaydedilemedi — en az bir eylem gerekli, alanları kontrol edin.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
@@ -95,7 +97,7 @@ export function AutomationRuleModal({
 
   const del = async () => {
     if (!rule) return;
-    if (!confirm('Kural silinsin mi?')) return;
+    if (!confirm(`${t('common.delete')}?`)) return;
     setBusy(true);
     setErr(null);
     try {
@@ -103,25 +105,28 @@ export function AutomationRuleModal({
       onSaved();
       onClose();
     } catch {
-      setErr('Silinemedi.');
+      setErr(t('common.error'));
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <Modal title={isNew ? 'Yeni otomasyon kuralı' : `Kural: ${rule.name}`} onClose={onClose}>
+    <Modal
+      title={isNew ? t('auto.newTitle') : `${t('auto.editPrefix')}: ${rule.name}`}
+      onClose={onClose}
+    >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <FormField
           id="ar-name"
-          label={`Ad ${isNew ? '*' : '(değişmez)'}`}
+          label={`${t('field.name')} ${isNew ? '*' : t('cf.immutable')}`}
           value={name}
           disabled={!isNew}
           onChange={(e) => setName(e.target.value)}
         />
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-600">
-            Tetikleyici {isNew ? '*' : '(değişmez)'}
+            {t('auto.trigger')} {isNew ? '*' : t('cf.immutable')}
           </label>
           <select
             value={trigger}
@@ -129,9 +134,9 @@ export function AutomationRuleModal({
             onChange={(e) => setTrigger(e.target.value)}
             className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm disabled:bg-gray-50"
           >
-            {TRIGGERS.map((t) => (
-              <option key={t} value={t}>
-                {t}
+            {TRIGGERS.map((tr) => (
+              <option key={tr} value={tr}>
+                {tr}
               </option>
             ))}
           </select>
@@ -145,31 +150,33 @@ export function AutomationRuleModal({
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
           />
-          Aktif
+          {t('common.active')}
         </label>
       )}
 
       <p className="mb-1 mt-4 text-sm font-medium text-gray-600">
-        Koşul (opsiyonel) — payload alanı = değer
+        {t('auto.condition')}
       </p>
       <div className="grid grid-cols-2 gap-2">
         <FormField
           id="ar-cf"
-          label="Alan"
-          placeholder="status"
+          label={t('auto.field')}
+          placeholder={t('auto.condFieldPh')}
           value={condField}
           onChange={(e) => setCondField(e.target.value)}
         />
         <FormField
           id="ar-ce"
-          label="Eşittir"
-          placeholder="WON"
+          label={t('auto.equals')}
+          placeholder={t('auto.condEqualsPh')}
           value={condEquals}
           onChange={(e) => setCondEquals(e.target.value)}
         />
       </div>
 
-      <p className="mb-1 mt-4 text-sm font-medium text-gray-600">Eylemler</p>
+      <p className="mb-1 mt-4 text-sm font-medium text-gray-600">
+        {t('auto.actions')}
+      </p>
       {actions.map((a, i) => (
         <div key={i} className="mb-2 rounded-md border border-gray-100 p-2">
           <div className="flex items-center gap-2">
@@ -180,9 +187,9 @@ export function AutomationRuleModal({
               }
               className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
             >
-              {ACTION_TYPES.map((t) => (
-                <option key={t} value={t}>
-                  {t}
+              {ACTION_TYPES.map((at) => (
+                <option key={at} value={at}>
+                  {at}
                 </option>
               ))}
             </select>
@@ -192,7 +199,7 @@ export function AutomationRuleModal({
                 className="px-2 py-1 text-xs"
                 onClick={() => setActions(actions.filter((_, idx) => idx !== i))}
               >
-                Kaldır
+                {t('auto.remove')}
               </Button>
             )}
           </div>
@@ -200,13 +207,13 @@ export function AutomationRuleModal({
             <div className="mt-2 grid grid-cols-2 gap-2">
               <input
                 className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-                placeholder="Şablon (ör. welcome)"
+                placeholder={t('auto.templatePh')}
                 value={a.template ?? ''}
                 onChange={(e) => setAction(i, { template: e.target.value })}
               />
               <input
                 className="rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-                placeholder="Alıcı e-posta"
+                placeholder={t('auto.toPh')}
                 value={a.to ?? ''}
                 onChange={(e) => setAction(i, { to: e.target.value })}
               />
@@ -214,7 +221,7 @@ export function AutomationRuleModal({
           ) : (
             <input
               className="mt-2 w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm"
-              placeholder="Not"
+              placeholder={t('auto.notePh')}
               value={a.note ?? ''}
               onChange={(e) => setAction(i, { note: e.target.value })}
             />
@@ -226,21 +233,21 @@ export function AutomationRuleModal({
         className="text-xs"
         onClick={() => setActions([...actions, { type: 'log', note: '' }])}
       >
-        + Eylem
+        {t('auto.addAction')}
       </Button>
 
       <div className="mt-4 flex items-center justify-between">
         <div className="flex gap-2">
           <Button disabled={busy || (isNew && !name.trim())} onClick={save}>
-            {busy ? '…' : 'Kaydet'}
+            {busy ? '…' : t('common.save')}
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            Vazgeç
+            {t('common.cancel')}
           </Button>
         </div>
         {!isNew && (
           <Button variant="danger" disabled={busy} onClick={del}>
-            Sil
+            {t('common.delete')}
           </Button>
         )}
       </div>
