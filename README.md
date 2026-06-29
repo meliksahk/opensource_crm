@@ -86,6 +86,7 @@ from the live source through a two-layer **role + permission** model.
 - **Low-code custom fields**: `CustomFieldDef` + `customFields` on records (Deal); TEXT/NUMBER/BOOLEAN/DATE/SELECT validation + required flag.
 
 ### 📈 Reporting
+- Chart-rich dashboard (dependency-free SVG): **monthly revenue** (invoiced vs paid, financial-only), **won/lost trend** + win rate, **deal-status donut**, **sales by salesperson**, **top products** (by quoted revenue), and pipeline-by-stage.
 - Pipeline value, period/status summaries, **weighted forecast** by stage probability, financial invoice summary (permission-gated).
 
 ### 🔗 Integration & data
@@ -168,7 +169,7 @@ All endpoints are served under the `/api/v1` prefix (Swagger: `/api/docs`).
 | **AI** | `GET /ai/status` · `POST /ai/deals/:id/score` · `/ai/draft-email` · `/ai/summarize` |
 | **Automation** | `/automation/rules` |
 | **Custom fields** | `/custom-fields` |
-| **Reports** | `/reports/{pipeline,deals/summary,forecast,invoices/summary}` |
+| **Reports** | `/reports/{pipeline,deals/summary,forecast,invoices/summary}` · `revenue/monthly` · `sales/by-owner` · `products/top` · `deals/won-lost` |
 | **Integrations** | `/integrations/webhooks` (+ inbound webhook HMAC verification) |
 | **Data** | `GET /data/export/:entity` · `POST /data/import/:entity` · `/data/duplicates/:entity` · `/data/merge/:entity` |
 | **Platform** | `/audit-logs` · `GET /search?q=` · `/gdpr/contacts/:id/{export,erase}` · `/tenants` (+ `:id/assign-user`) |
