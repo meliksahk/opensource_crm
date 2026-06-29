@@ -8,7 +8,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { LeadStatus } from '@prisma/client';
+import { LeadChannel, LeadStatus } from '@prisma/client';
 import { PaginationDto } from '../../../common/dto/pagination.dto';
 
 export class CreateLeadDto {
@@ -96,6 +96,23 @@ export class QueryLeadDto extends PaginationDto {
   @IsOptional()
   @IsEnum(LeadStatus)
   status?: LeadStatus;
+
+  @ApiPropertyOptional({ enum: LeadChannel })
+  @IsOptional()
+  @IsEnum(LeadChannel)
+  channel?: LeadChannel;
+
+  @ApiPropertyOptional({ description: 'Kaynak form id (FORM kanalı filtresi)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  formId?: string;
+
+  @ApiPropertyOptional({ description: 'Alt-kaynak (serbest metin) içerir' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  source?: string;
 
   @ApiPropertyOptional()
   @IsOptional()

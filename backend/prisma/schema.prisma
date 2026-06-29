@@ -426,24 +426,67 @@ enum LeadStatus {
   CONVERTED
 }
 
+// Lead'in sisteme GİRİŞ kanalı (nasıl geldi) — serbest metin `source`'tan ayrı,
+// yapısal ve filtrelenebilir. MANUAL: panelden elle; IMPORT: CSV içe aktarma;
+// FORM: embed edilebilir lead formu; WEBHOOK: imzalı sunucu-sunucu webhook; API: doğrudan API.
+enum LeadChannel {
+  MANUAL
+  IMPORT
+  FORM
+  WEBHOOK
+  API
+}
+
 model Lead {
-  id                 String     @id @default(uuid())
+  id                 String      @id @default(uuid())
   firstName          String
   lastName           String
   email              String?
   phone              String?
   companyName        String?
-  source             String? // WEB, REFERRAL, EVENT, ...
-  status             LeadStatus @default(NEW)
+  source             String? // alt-kaynak (serbest): WEB, REFERRAL, EVENT, ...
+  channel            LeadChannel @default(MANUAL) // giriş kanalı (yapısal)
+  formId             String? // FORM kanalı için kaynak form
+  meta               Json? // ham yük / ekstra alanlar (form-özel alanlar, webhook gövdesi)
+  status             LeadStatus  @default(NEW)
   ownerId            String?
   tenantId           String?
   convertedContactId String?
   convertedDealId    String?
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  form LeadForm? @relation(fields: [formId], references: [id], onDelete: SetNull)
 
   @@index([tenantId])
   @@index([status])
+  @@index([channel])
+  @@index([formId])
+}
+
+// ===== Lead Intake — Embed edilebilir form + gelen webhook =====
+// Embed form: 3. parti sitelere iframe/script ile gömülür; publicKey ile imzasız submit
+// (source-by-default public). Webhook: aynı form'un `secret`'ı ile HMAC imzalı sunucu-sunucu
+// ingest (docs/90 §webhook: imza doğrulanmadan DB yazımı YOK).
+model LeadForm {
+  id             String   @id @default(uuid())
+  tenantId       String?
+  name           String
+  publicKey      String   @unique // embed URL'inde + submit yolunda kullanılır (gizli değil)
+  secret         String // webhook HMAC imzası için (yalnız sunucu-sunucu; embed'e sızdırılmaz)
+  fields         Json     @default("[]") // [{ key, label, type, required }]
+  buttonColor    String   @default("#4f46e5")
+  buttonLabel    String   @default("Gönder")
+  successMessage String?
+  redirectUrl    String? // submit sonrası yönlendirme (ops.)
+  isActive       Boolean  @default(true)
+  submitCount    Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  leads Lead[]
+
+  @@index([tenantId])
 }
 
 // ===== v2.2 — Takvim / Toplantı =====

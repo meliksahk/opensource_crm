@@ -7,10 +7,25 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { LeadStatus, Prisma } from '@prisma/client';
+import { LeadChannel, LeadStatus, Prisma } from '@prisma/client';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 import { LeadsRepository } from './leads.repository';
 import { CreateLeadDto, QueryLeadDto, UpdateLeadDto } from './dto/lead.dto';
+
+// Form/webhook/CSV gibi katmanların kanal bilgisiyle lead açması için ortak girdi.
+export interface IntakeLeadInput {
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  phone?: string | null;
+  companyName?: string | null;
+  source?: string | null;
+  channel: LeadChannel;
+  formId?: string | null;
+  meta?: Prisma.InputJsonValue;
+  tenantId?: string | null;
+  ownerId?: string | null;
+}
 
 @Injectable()
 export class LeadsService {
@@ -19,13 +34,44 @@ export class LeadsService {
   constructor(private readonly repo: LeadsRepository) {}
 
   async create(dto: CreateLeadDto, actor: AuthenticatedUser) {
-    const lead = await this.repo.create({ ...dto, ownerId: actor.id });
+    // Panelden elle oluşturma → MANUAL kanal.
+    const lead = await this.repo.create({
+      ...dto,
+      channel: LeadChannel.MANUAL,
+      ownerId: actor.id,
+    });
+    return lead;
+  }
+
+  // Form/webhook/CSV kanallarından kaynak bilgisiyle lead açar (aktör yok).
+  // tenantId açıkça verilir (public yolda tenant context null'dır).
+  async createFromIntake(input: IntakeLeadInput) {
+    const data: Prisma.LeadCreateInput = {
+      firstName: input.firstName,
+      lastName: input.lastName,
+      email: input.email ?? undefined,
+      phone: input.phone ?? undefined,
+      companyName: input.companyName ?? undefined,
+      source: input.source ?? undefined,
+      channel: input.channel,
+      meta: input.meta,
+      tenantId: input.tenantId ?? undefined,
+      ownerId: input.ownerId ?? undefined,
+    };
+    if (input.formId) data.form = { connect: { id: input.formId } };
+    const lead = await this.repo.create(data);
+    this.logger.log(
+      `lead.intake channel=${input.channel} form=${input.formId ?? '-'} lead=${lead.id}`,
+    );
     return lead;
   }
 
   async findAll(q: QueryLeadDto) {
     const where: Prisma.LeadWhereInput = {};
     if (q.status) where.status = q.status;
+    if (q.channel) where.channel = q.channel;
+    if (q.formId) where.formId = q.formId;
+    if (q.source) where.source = { contains: q.source, mode: 'insensitive' };
     if (q.q) {
       where.OR = [
         { firstName: { contains: q.q, mode: 'insensitive' } },
