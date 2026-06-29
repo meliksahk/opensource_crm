@@ -59,6 +59,9 @@ from the live source through a two-layer **role + permission** model.
 - **Pipeline + Kanban**: collision-free drag-and-drop via fractional ranking; atomic stage/order change (single transaction) + activity log.
 - **Deal**: CRUD, ownership-based access, status (OPEN/WON/LOST), activities (NOTE/CALL/EMAIL/STAGE_CHANGE).
 - **Lead (unqualified)** → `convert` flow into Contact + Company + Deal.
+- **Lead intake & source tracking**: every lead records a structured **channel** (`MANUAL` / `IMPORT` / `FORM` / `WEBHOOK` / `API`) alongside the free-text sub-source, and is filterable by channel/status/source.
+  - **Embeddable form builder**: configure fields, button color & label, success message and redirect; embed on any external site via an `<iframe>` snippet. Submissions are unsigned/public and land as `FORM` leads (with custom fields captured into `meta`).
+  - **Inbound lead webhook**: server-to-server endpoint per form; **HMAC-SHA256 signature is mandatory** (`x-crm-signature` / `x-crm-timestamp`) — an invalid or missing signature returns `401` with no DB write. Lands as a `WEBHOOK` lead.
 - **Company / Contact**: related people/organization records.
 - **Meeting**: calendar/meeting records (with date validation).
 
@@ -154,7 +157,8 @@ All endpoints are served under the `/api/v1` prefix (Swagger: `/api/docs`).
 | **Auth** | `POST /auth/login` · `/auth/register` · `/auth/refresh` · `/auth/logout` |
 | **Users/Roles** | `/users` · `/roles` (CRUD + role assignment) |
 | **Deal/Kanban** | `/deals` · `/deals/board` · `PATCH /deals/:id/move` · `/deals/:id/activities` |
-| **Lead** | `/leads` · `POST /leads/:id/convert` |
+| **Lead** | `/leads` (filter `?channel=&status=&source=`) · `POST /leads/:id/convert` |
+| **Lead forms** | `/lead-forms` (CRUD, `:id/secret`, `:id/rotate-secret`) · public: `GET /public/lead-forms/:publicKey`, `POST /public/lead-forms/:publicKey/submit`, `POST /webhooks/leads/:publicKey` (HMAC) |
 | **Company / Contact** | `/companies` · `/contacts` |
 | **Meeting** | `/meetings` |
 | **Invoice** | `/invoices` · `POST /:id/issue` · `/:id/payments` · `/:id/cancel` |
