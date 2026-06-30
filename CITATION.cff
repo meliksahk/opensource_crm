@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use awesome-crm, please cite this repository."
+title: "awesome-crm"
+abstract: "An enterprise-grade, self-hosted open-source CRM built with NestJS and Next.js: leads and web-to-lead forms, sales pipeline with a Kanban board, contacts, quotes (CPQ) and invoicing, chart-rich reports, signed webhooks, RBAC and multi-tenancy."
+type: software
+authors:
+  - name: "meliksahk"
+repository-code: "https://github.com/meliksahk/awesome-crm"
+url: "https://meliksahk.github.io/awesome-crm/"
+license: MIT
+keywords:
+  - crm
+  - open-source
+  - self-hosted
+  - nestjs
+  - nextjs
+  - typescript
+  - prisma
+  - postgresql
+  - rbac
+  - multi-tenant
+  - kanban
+  - sales
