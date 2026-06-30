@@ -10,7 +10,12 @@ import {
 import { LeadChannel, LeadStatus, Prisma } from '@prisma/client';
 import { AuthenticatedUser } from '../../common/decorators/current-user.decorator';
 import { LeadsRepository } from './leads.repository';
-import { CreateLeadDto, QueryLeadDto, UpdateLeadDto } from './dto/lead.dto';
+import {
+  ConvertLeadDto,
+  CreateLeadDto,
+  QueryLeadDto,
+  UpdateLeadDto,
+} from './dto/lead.dto';
 
 // Form/webhook/CSV gibi katmanların kanal bilgisiyle lead açması için ortak girdi.
 export interface IntakeLeadInput {
@@ -110,8 +115,12 @@ export class LeadsService {
     return { deleted: true };
   }
 
-  async convert(id: string, actor: AuthenticatedUser) {
-    const result = await this.repo.convert(id, actor.id);
+  async convert(
+    id: string,
+    actor: AuthenticatedUser,
+    dto: ConvertLeadDto = {},
+  ) {
+    const result = await this.repo.convert(id, actor.id, dto);
     if ('notFound' in result) {
       throw new NotFoundException('Lead bulunamadı');
     }

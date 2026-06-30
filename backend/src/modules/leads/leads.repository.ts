@@ -37,9 +37,23 @@ export class LeadsRepository {
     return this.prisma.lead.delete({ where: { id } });
   }
 
-  // Lead → Contact (+Company) + Deal (varsayılan pipeline, ilk stage). Tek transaction.
+  // Lead → Contact (+Company) + Deal (varsayılan pipeline). Tek transaction.
+  // `overrides` ile Deal/Contact alanları opsiyonel düzenlenebilir (boşsa lead verisi).
   // Tenant otomatik filtresi tx içinde de uygulanır (oluşturmalarda tenantId atanır).
-  async convert(leadId: string, actorId: string) {
+  async convert(
+    leadId: string,
+    actorId: string,
+    overrides: {
+      title?: string;
+      value?: string;
+      currency?: string;
+      company?: string;
+      contactName?: string;
+      email?: string;
+      phone?: string;
+      stageId?: string;
+    } = {},
+  ) {
     return this.prisma.$transaction(async (tx) => {
       const lead = await tx.lead.findFirst({ where: { id: leadId } });
       if (!lead) return { notFound: true as const };
@@ -49,28 +63,36 @@ export class LeadsRepository {
 
       const pipeline = await tx.pipeline.findFirst({
         where: { isDefault: true },
-        include: { stages: { orderBy: { position: 'asc' }, take: 1 } },
+        include: { stages: { orderBy: { position: 'asc' } } },
       });
       if (!pipeline || !pipeline.stages[0]) {
         return { noPipeline: true as const };
       }
-      const stage = pipeline.stages[0];
+      // Hedef stage: override geçerliyse o; değilse ilk stage.
+      const stage =
+        pipeline.stages.find((s) => s.id === overrides.stageId) ??
+        pipeline.stages[0];
       const owner = lead.ownerId ?? actorId;
 
+      const companyName =
+        (overrides.company ?? lead.companyName)?.trim() || null;
       let companyId: string | undefined;
-      if (lead.companyName) {
+      if (companyName) {
         const company = await tx.company.create({
-          data: { name: lead.companyName, ownerId: owner },
+          data: { name: companyName, ownerId: owner },
         });
         companyId = company.id;
       }
+
+      const email = overrides.email?.trim() || lead.email || null;
+      const phone = overrides.phone?.trim() || lead.phone || null;
 
       const contact = await tx.contact.create({
         data: {
           firstName: lead.firstName,
           lastName: lead.lastName,
-          email: lead.email,
-          phone: lead.phone,
+          email,
+          phone,
           ownerId: owner,
           companyId,
         },
@@ -82,11 +104,20 @@ export class LeadsRepository {
       });
       const rank = (max._max.rank ? Number(max._max.rank) : 0) + 1;
 
+      const fullName = `${lead.firstName} ${lead.lastName}`.trim();
       const deal = await tx.deal.create({
         data: {
           pipelineId: pipeline.id,
           stageId: stage.id,
-          title: `${lead.firstName} ${lead.lastName}`,
+          title: overrides.title?.trim() || fullName,
+          value: overrides.value
+            ? new Prisma.Decimal(overrides.value)
+            : undefined,
+          currency: overrides.value ? overrides.currency || 'TRY' : undefined,
+          company: companyName ?? undefined,
+          contactName: overrides.contactName?.trim() || fullName,
+          email: email ?? undefined,
+          phone: phone ?? undefined,
           rank,
           ownerId: owner,
           contactId: contact.id,

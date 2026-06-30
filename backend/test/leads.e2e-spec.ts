@@ -26,6 +26,8 @@ describe('Leads (unqualified) + convert (e2e)', () => {
   let leadId: string;
   let dealId: string;
   let contactId: string;
+  let deal2Id: string;
+  let contact2Id: string;
 
   const pw = 'S3cure!Passw0rd';
   const ts = Date.now();
@@ -90,10 +92,15 @@ describe('Leads (unqualified) + convert (e2e)', () => {
 
   afterAll(async () => {
     if (prisma) {
-      if (dealId) await prisma.deal.deleteMany({ where: { id: dealId } });
-      if (contactId)
-        await prisma.contact.deleteMany({ where: { id: contactId } });
-      await prisma.company.deleteMany({ where: { name: `LeadCo_${ts}` } });
+      await prisma.deal.deleteMany({
+        where: { id: { in: [dealId, deal2Id].filter(Boolean) } },
+      });
+      await prisma.contact.deleteMany({
+        where: { id: { in: [contactId, contact2Id].filter(Boolean) } },
+      });
+      await prisma.company.deleteMany({
+        where: { name: { in: [`LeadCo_${ts}`, `OverrideCo_${ts}`] } },
+      });
       await prisma.lead.deleteMany({ where: { firstName: `LN_${ts}` } });
       await prisma.user.deleteMany({ where: { id: { in: testUserIds } } });
       await prisma.$disconnect();
@@ -139,6 +146,39 @@ describe('Leads (unqualified) + convert (e2e)', () => {
     const deal = await prisma.deal.findUnique({ where: { id: dealId } });
     expect(deal?.contactId).toBe(contactId);
     expect(deal?.companyId).toBeTruthy();
+  });
+
+  it('convert + override → Deal başlık/değer/şirket override edilir', async () => {
+    const lead = await request(app.getHttpServer())
+      .post(`${base}/leads`)
+      .set(auth(salesToken))
+      .send({ firstName: `LN_${ts}`, lastName: 'Override' })
+      .expect(201);
+    // Hedef stage (ilk pipeline'ın 2. stage'i)
+    const pipes = await request(app.getHttpServer())
+      .get(`${base}/pipelines`)
+      .set(auth(salesToken))
+      .expect(200);
+    const stage = pipes.body.data[0].stages[1];
+    const r = await request(app.getHttpServer())
+      .post(`${base}/leads/${lead.body.data.id}/convert`)
+      .set(auth(salesToken))
+      .send({
+        title: `Big Deal ${ts}`,
+        value: '15000.50',
+        currency: 'USD',
+        company: `OverrideCo_${ts}`,
+        stageId: stage.id,
+      })
+      .expect(200);
+    deal2Id = r.body.data.dealId;
+    contact2Id = r.body.data.contactId;
+    const deal = await prisma.deal.findUnique({ where: { id: deal2Id } });
+    expect(deal?.title).toBe(`Big Deal ${ts}`);
+    expect(deal?.value?.toString()).toBe('15000.5');
+    expect(deal?.currency).toBe('USD');
+    expect(deal?.stageId).toBe(stage.id);
+    expect(deal?.company).toBe(`OverrideCo_${ts}`);
   });
 
   it('Aynı lead tekrar convert → 409', () =>

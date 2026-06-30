@@ -20,7 +20,12 @@ import {
 } from '../../common/decorators/current-user.decorator';
 import { Permissions } from '../../common/decorators/permissions.decorator';
 import { LeadsService } from './leads.service';
-import { CreateLeadDto, QueryLeadDto, UpdateLeadDto } from './dto/lead.dto';
+import {
+  ConvertLeadDto,
+  CreateLeadDto,
+  QueryLeadDto,
+  UpdateLeadDto,
+} from './dto/lead.dto';
 
 @ApiTags('leads')
 @ApiBearerAuth()
@@ -55,12 +60,15 @@ export class LeadsController {
   @Post(':id/convert')
   @Permissions(PERMISSIONS.LEAD.CONVERT)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Lead → Contact + Deal dönüştür' })
+  @ApiOperation({
+    summary: 'Lead → Contact + Deal dönüştür (opsiyonel override)',
+  })
   convert(
     @Param('id', ParseUUIDPipe) id: string,
     @CurrentUser() actor: AuthenticatedUser,
+    @Body() dto: ConvertLeadDto,
   ) {
-    return this.service.convert(id, actor);
+    return this.service.convert(id, actor, dto);
   }
 
   @Delete(':id')
