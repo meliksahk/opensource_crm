@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>awesome-crm — Open-source CRM (NestJS + Next.js, self-hosted)</title>
+  <meta name="description" content="awesome-crm is a free, self-hosted, enterprise-grade open-source CRM built with NestJS and Next.js: leads and web-to-lead forms, sales pipeline with a Kanban board, quotes and invoicing, chart-rich reports, signed webhooks, RBAC and multi-tenancy. MIT licensed." />
+  <meta name="keywords" content="open source crm, self-hosted crm, free crm, nestjs crm, nextjs crm, typescript crm, prisma, postgresql, rbac, multi-tenant, kanban, sales pipeline, invoicing, quotes, web-to-lead, awesome-crm" />
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="meliksahk" />
+  <link rel="canonical" href="https://meliksahk.github.io/awesome-crm/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="awesome-crm" />
+  <meta property="og:title" content="awesome-crm — Open-source CRM (NestJS + Next.js)" />
+  <meta property="og:description" content="Free, self-hosted, enterprise-grade open-source CRM: leads & web forms, deals/Kanban, quotes & invoicing, reports, signed webhooks, RBAC, multi-tenancy. MIT licensed." />
+  <meta property="og:url" content="https://meliksahk.github.io/awesome-crm/" />
+  <meta property="og:image" content="https://opengraph.githubassets.com/1/meliksahk/awesome-crm" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="awesome-crm — Open-source CRM (NestJS + Next.js)" />
+  <meta name="twitter:description" content="Free, self-hosted, enterprise-grade open-source CRM. MIT licensed." />
+  <meta name="twitter:image" content="https://opengraph.githubassets.com/1/meliksahk/awesome-crm" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "awesome-crm",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Linux, Docker",
+    "description": "Free, self-hosted, enterprise-grade open-source CRM built with NestJS and Next.js: leads, web-to-lead forms, deals/Kanban, quotes, invoicing, reports, webhooks, RBAC and multi-tenancy.",
+    "url": "https://meliksahk.github.io/awesome-crm/",
+    "codeRepository": "https://github.com/meliksahk/awesome-crm",
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "meliksahk" },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  }
+  </script>
+
+  <style>
+    :root { --bg:#0b1020; --panel:#121a33; --line:#23304f; --ink:#e7ecf7; --mut:#9fb0d0; --brand:#6366f1; --brand2:#8b5cf6; --ok:#10b981; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--ink); line-height:1.6; }
+    a { color: inherit; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 0 20px; }
+    header.hero { padding: 72px 0 40px; text-align:center; background: radial-gradient(1200px 400px at 50% -10%, rgba(99,102,241,.25), transparent); }
+    .badge { display:inline-block; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--mut); border:1px solid var(--line); border-radius:999px; padding:4px 12px; margin-bottom:18px; }
+    h1 { font-size: clamp(30px, 6vw, 52px); margin:.2em 0; line-height:1.1; }
+    h1 .grad { background: linear-gradient(90deg, var(--brand), var(--brand2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .tag { font-size: clamp(16px,2.4vw,20px); color: var(--mut); max-width: 720px; margin: 0 auto 28px; }
+    .cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; gap:8px; border-radius:10px; padding:12px 20px; font-weight:600; text-decoration:none; border:1px solid var(--line); }
+    .btn.primary { background: linear-gradient(90deg, var(--brand), var(--brand2)); border-color: transparent; color:#fff; }
+    .btn.ghost { background: var(--panel); color: var(--ink); }
+    section { padding: 40px 0; }
+    h2 { font-size: 22px; margin: 0 0 18px; }
+    .grid { display:grid; gap:16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card { background: var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; }
+    .card h3 { margin:0 0 6px; font-size:16px; }
+    .card p { margin:0; color: var(--mut); font-size:14px; }
+    .stack { display:flex; flex-wrap:wrap; gap:8px; }
+    .pill { background: var(--panel); border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:13px; color: var(--mut); }
+    ul.checks { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+    ul.checks li { padding-left:26px; position:relative; color: var(--mut); }
+    ul.checks li::before { content:"✓"; position:absolute; left:0; color: var(--ok); font-weight:700; }
+    footer { border-top:1px solid var(--line); padding:28px 0 56px; color: var(--mut); font-size:14px; text-align:center; }
+    .kpis { display:flex; gap:24px; justify-content:center; flex-wrap:wrap; margin-top:26px; color:var(--mut); font-size:14px; }
+    .kpis b { color: var(--ink); }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <span class="badge">Open source · MIT · Self-hosted</span>
+      <h1><span class="grad">awesome-crm</span><br/>Open-source CRM for teams that outgrow spreadsheets</h1>
+      <p class="tag">An enterprise-grade, free and self-hosted CRM built with <b>NestJS</b> and <b>Next.js</b> — leads &amp; web-to-lead forms, a drag-and-drop sales pipeline, quotes &amp; invoicing, chart-rich reports, signed webhooks, RBAC and multi-tenancy.</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/meliksahk/awesome-crm">★ View on GitHub</a>
+        <a class="btn ghost" href="#features">Explore features</a>
+      </div>
+      <div class="kpis">
+        <span><b>106</b> unit + <b>124</b> e2e tests</span>
+        <span><b>API-first</b> &amp; secure-by-default</span>
+        <span><b>EN / TR</b> i18n</span>
+      </div>
+    </div>
+  </header>
+
+  <section id="features" class="wrap">
+    <h2>Features</h2>
+    <div class="grid">
+      <div class="card"><h3>🧲 Leads &amp; intake</h3><p>Unqualified leads, embeddable web-to-lead forms and HMAC-signed inbound webhooks with per-channel source tracking.</p></div>
+      <div class="card"><h3>📊 Pipeline &amp; Kanban</h3><p>Drag-and-drop deals across configurable stages, collision-free ranking, activity log, lead → deal conversion.</p></div>
+      <div class="card"><h3>👥 Contacts &amp; companies</h3><p>People and organizations, meetings, duplicate detection &amp; merge.</p></div>
+      <div class="card"><h3>🧾 Quotes &amp; invoicing</h3><p>CPQ quotes and invoices with immutable financial records, payments and server-side calculation.</p></div>
+      <div class="card"><h3>📈 Reports &amp; dashboard</h3><p>Chart-rich reports: monthly revenue, win rate, sales by rep, top products, pipeline by stage.</p></div>
+      <div class="card"><h3>🔗 Integrations &amp; AI</h3><p>Outbound HMAC-signed webhooks with delivery history, and an AI assistant (Claude).</p></div>
+      <div class="card"><h3>🔐 RBAC &amp; multi-tenancy</h3><p>Two-layer permissions (roles + permissions), tenant isolation, audit log.</p></div>
+      <div class="card"><h3>🌍 i18n &amp; self-hosting</h3><p>Built-in English &amp; Turkish, add languages from the panel; one-command Docker deploy.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>Tech stack</h2>
+    <div class="stack">
+      <span class="pill">NestJS</span><span class="pill">Next.js 14</span><span class="pill">TypeScript</span>
+      <span class="pill">PostgreSQL</span><span class="pill">Prisma</span><span class="pill">JWT + RBAC</span>
+      <span class="pill">Atomic Design</span><span class="pill">React Query</span><span class="pill">Docker</span>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <h2>Why awesome-crm</h2>
+    <ul class="checks">
+      <li>Free &amp; MIT-licensed — own your data, self-host anywhere.</li>
+      <li>API-first, layered architecture (Controller → Service → Repository).</li>
+      <li>Secure by default: every endpoint protected, financial integrity, signature-verified webhooks.</li>
+      <li>Tested: 106 unit + 124 e2e — including negative tests (IDOR, privilege escalation, signature tampering).</li>
+    </ul>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <p><a href="https://github.com/meliksahk/awesome-crm">github.com/meliksahk/awesome-crm</a> · MIT License</p>
+      <p>Built with <a href="https://claude.com/claude-code">Claude Code</a>.</p>
+    </div>
+  </footer>
+</body>
+</html>
