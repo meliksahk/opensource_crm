@@ -1,6 +1,6 @@
 <div align="center">
 
-# Açık Kaynak CRM (Open-Source CRM)
+# Awesome CRM (Open-Source CRM)
 
 **An enterprise-grade, scalable, secure, role-based (RBAC) and multi-tenant, API-First open-source CRM.**
 
