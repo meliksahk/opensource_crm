@@ -92,6 +92,21 @@ export default function InvoicesPage() {
     onSuccess: invalidate,
   });
 
+  // v3.2 — bağlı muhasebe sağlayıcısına gönder (QuickBooks/Xero).
+  const accSync = useMutation({
+    mutationFn: async (id: string) =>
+      unwrap<{ status: string; externalId?: string | null; error?: string }>(
+        (await api.post(`/accounting/invoices/${id}/sync`)).data,
+      ),
+    onSuccess: (r) =>
+      alert(
+        r.status === 'SYNCED'
+          ? `${t('acc.synced')} · ${r.externalId ?? ''}`
+          : `${t('acc.syncFailed')}: ${r.error ?? ''}`,
+      ),
+    onError: () => alert(t('acc.notConnected')),
+  });
+
   const setLine = (i: number, patch: Partial<Line>) =>
     setLines(lines.map((l, idx) => (idx === i ? { ...l, ...patch } : l)));
 
@@ -149,6 +164,17 @@ export default function InvoicesPage() {
               💬 {t('wa.sendVia')}
             </Button>
           )}
+          {can('invoice.update') &&
+            !['DRAFT', 'CANCELLED'].includes(r.status) && (
+              <Button
+                variant="ghost"
+                className="px-2 py-1 text-xs"
+                onClick={() => accSync.mutate(r.id)}
+                disabled={accSync.isPending}
+              >
+                🧮 {t('acc.sync')}
+              </Button>
+            )}
           {['DRAFT', 'SENT'].includes(r.status) && can('invoice.update') && (
             <Button
               variant="danger"

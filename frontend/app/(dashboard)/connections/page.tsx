@@ -93,6 +93,15 @@ export default function ConnectionsPage() {
       ),
     onSuccess: (r) => alert(r.message),
   });
+  const authorize = useMutation({
+    mutationFn: async (id: string) =>
+      unwrap<{ url: string }>(
+        (await api.get(`/connections/${id}/oauth/start`)).data,
+      ),
+    onSuccess: (r) => {
+      window.location.href = r.url; // sağlayıcı yetkilendirme sayfasına git
+    },
+  });
   const remove = useMutation({
     mutationFn: async (id: string) => api.delete(`/connections/${id}`),
     onSuccess: invalidate,
@@ -122,10 +131,20 @@ export default function ConnectionsPage() {
                 <div className="mb-1 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-800">{p.name}</h3>
                   {conn ? (
-                    <Badge tone={conn.status === 'connected' ? 'green' : 'gray'}>
+                    <Badge
+                      tone={
+                        conn.status === 'connected'
+                          ? 'green'
+                          : conn.status === 'pending_auth'
+                            ? 'amber'
+                            : 'gray'
+                      }
+                    >
                       {conn.status === 'connected'
                         ? t('conn.connected')
-                        : t('conn.disabled')}
+                        : conn.status === 'pending_auth'
+                          ? t('conn.pendingAuth')
+                          : t('conn.disabled')}
                     </Badge>
                   ) : (
                     !p.available && (
@@ -139,6 +158,15 @@ export default function ConnectionsPage() {
                   {conn ? (
                     manage && (
                       <>
+                        {conn.status === 'pending_auth' && (
+                          <Button
+                            className="px-3 py-1 text-xs"
+                            onClick={() => authorize.mutate(conn.id)}
+                            disabled={authorize.isPending}
+                          >
+                            {t('conn.authorize')}
+                          </Button>
+                        )}
                         {p.testable && (
                           <Button
                             variant="secondary"

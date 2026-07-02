@@ -461,6 +461,14 @@ export const en: Dict = {
   'wa.invoiceMsg':
     'Hello {name}, your invoice {number} totaling {total} {currency} has been issued.',
   'auto.sendWhatsappHint': 'Recipient (blank = phone from event)',
+  // Accounting (v3.2)
+  'conn.pendingAuth': 'Authorization pending',
+  'conn.authorize': 'Authorize',
+  'acc.sync': 'Sync to accounting',
+  'acc.synced': 'Synced',
+  'acc.syncFailed': 'Sync failed',
+  'acc.notConnected':
+    'No accounting provider connected. Connect QuickBooks or Xero on the Connections page.',
 };
 
 // --- Türkçe ---
@@ -905,6 +913,14 @@ export const tr: Dict = {
   'wa.invoiceMsg':
     'Merhaba {name}, {total} {currency} tutarındaki {number} numaralı faturanız kesildi.',
   'auto.sendWhatsappHint': 'Alıcı (boş = olaydaki telefon)',
+  // Muhasebe (v3.2)
+  'conn.pendingAuth': 'Yetkilendirme bekliyor',
+  'conn.authorize': 'Yetkilendir',
+  'acc.sync': 'Muhasebeye aktar',
+  'acc.synced': 'Aktarıldı',
+  'acc.syncFailed': 'Aktarım başarısız',
+  'acc.notConnected':
+    'Bağlı muhasebe sağlayıcısı yok. Bağlantılar sayfasından QuickBooks veya Xero bağlayın.',
 };
 
 const BUILTIN: Record<string, { name: string; dict: Dict }> = {
