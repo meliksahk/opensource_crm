@@ -11,18 +11,47 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
+  Res,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { PERMISSIONS } from '../../common/constants/permission.enum';
 import { Permissions } from '../../common/decorators/permissions.decorator';
+import { Public } from '../../common/decorators/public.decorator';
 import { ConnectionsService } from './connections.service';
+import { OAuthService } from './oauth.service';
 import { CreateConnectionDto, UpdateConnectionDto } from './dto/connection.dto';
 
 @ApiTags('connections')
 @ApiBearerAuth()
 @Controller('connections')
 export class ConnectionsController {
-  constructor(private readonly service: ConnectionsService) {}
+  constructor(
+    private readonly service: ConnectionsService,
+    private readonly oauth: OAuthService,
+  ) {}
+
+  // OAuth callback — tarayıcı yönlendirmesi JWT taşımaz; yetki state ile (bilinçli @Public).
+  @Public()
+  @Get('oauth/callback')
+  @ApiOperation({
+    summary: 'OAuth2 callback (state doğrulamalı, panele yönlendirir)',
+  })
+  async oauthCallback(
+    @Query() query: Record<string, string | undefined>,
+    @Res() res: Response,
+  ) {
+    const target = await this.oauth.callback(query);
+    res.redirect(target);
+  }
+
+  @Get(':id/oauth/start')
+  @Permissions(PERMISSIONS.INTEGRATION.MANAGE)
+  @ApiOperation({ summary: 'OAuth2 yetkilendirme URLini üret' })
+  oauthStart(@Param('id', ParseUUIDPipe) id: string) {
+    return this.oauth.start(id);
+  }
 
   @Get('catalog')
   @Permissions(PERMISSIONS.INTEGRATION.READ)

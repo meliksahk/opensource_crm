@@ -72,24 +72,41 @@ export const PROVIDERS: ProviderDef[] = [
       },
     ],
   },
-  // OAuth2 tabanlılar — çatı hazır; akış sonraki fazda (V3.2/V3.3).
+  // OAuth2 tabanlılar (v3.2): clientId/clientSecret girilir → panelden "Yetkilendir" ile
+  // sağlayıcıya yönlenilir; token'lar şifreli saklanır ve otomatik yenilenir.
   {
     key: 'quickbooks',
     name: 'QuickBooks Online',
     category: 'accounting',
     authType: 'oauth2',
-    available: false,
+    available: true,
     testable: false,
-    fields: [],
+    fields: [
+      { key: 'clientId', label: 'Client ID', secret: false, required: true },
+      {
+        key: 'clientSecret',
+        label: 'Client Secret',
+        secret: true,
+        required: true,
+      },
+    ],
   },
   {
     key: 'xero',
     name: 'Xero',
     category: 'accounting',
     authType: 'oauth2',
-    available: false,
+    available: true,
     testable: false,
-    fields: [],
+    fields: [
+      { key: 'clientId', label: 'Client ID', secret: false, required: true },
+      {
+        key: 'clientSecret',
+        label: 'Client Secret',
+        secret: true,
+        required: true,
+      },
+    ],
   },
   {
     key: 'iyzico',

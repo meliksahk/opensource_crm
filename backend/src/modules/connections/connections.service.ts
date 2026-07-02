@@ -63,7 +63,8 @@ export class ConnectionsService {
     const row = await this.repo.create({
       provider: dto.provider,
       label: dto.label,
-      status: 'connected',
+      // OAuth2 sağlayıcılar önce yetkilendirme bekler (panelde "Yetkilendir" adımı).
+      status: provider.authType === 'oauth2' ? 'pending_auth' : 'connected',
       secretsEnc: this.crypto.encryptJson(secrets),
       config: config as Prisma.InputJsonValue,
     });

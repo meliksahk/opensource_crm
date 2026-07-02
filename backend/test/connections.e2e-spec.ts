@@ -139,11 +139,11 @@ describe('Connections (e2e)', () => {
       .send({ provider: 'stripe', secrets: {} })
       .expect(400));
 
-  it('connect kullanılamaz sağlayıcı (quickbooks) → 400', () =>
+  it('connect kullanılamaz sağlayıcı (iyzico) → 400', () =>
     request(app.getHttpServer())
       .post(`${base}/connections`)
       .set(auth(adminToken))
-      .send({ provider: 'quickbooks' })
+      .send({ provider: 'iyzico' })
       .expect(400));
 
   it('aynı sağlayıcı ikinci kez → 409', () =>

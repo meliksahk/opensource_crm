@@ -57,4 +57,9 @@ export const envValidationSchema = Joi.object({
   // --- v3.0: Entegrasyon bağlantıları — panel sırlarını AES-256-GCM ile şifreler.
   // base64 kodlu 32 baytlık anahtar. Yoksa bağlantı sır işlemleri açık hata döner (fail-safe).
   APP_ENCRYPTION_KEY: Joi.string().allow('').optional(),
+
+  // --- v3.2: OAuth redirect tabanı (sağlayıcı konsoluna girilen callback URL'in kökü).
+  APP_PUBLIC_URL: Joi.string().uri().default('http://localhost:3000'),
+  // Panel adresi (OAuth sonrası kullanıcı buraya döner).
+  APP_PANEL_URL: Joi.string().uri().default('http://localhost:3001'),
 });

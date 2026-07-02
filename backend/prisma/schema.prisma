@@ -622,3 +622,18 @@ model WhatsAppMessage {
   @@index([contactId])
   @@index([tenantId])
 }
+
+// ===== v3.2 — Muhasebe senkronu (fatura → QuickBooks/Xero) =====
+model AccountingSync {
+  id         String   @id @default(uuid())
+  invoiceId  String   @unique
+  provider   String // quickbooks | xero
+  externalId String? // sağlayıcıdaki fatura id'si
+  status     String   @default("PENDING") // PENDING | SYNCED | FAILED
+  error      String?
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([status])
+}
