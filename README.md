@@ -94,7 +94,9 @@ from the live source through a two-layer **role + permission** model.
 - Pipeline value, period/status summaries, **weighted forecast** by stage probability, financial invoice summary (permission-gated).
 
 ### 🔗 Integration & data
-- **Connections (panel-connectable integrations)**: connect external services from `/connections` — WhatsApp Business and Stripe live (test-ping), QuickBooks/Xero/iyzico scaffolded. Secrets are stored **AES-256-GCM encrypted** at rest (`APP_ENCRYPTION_KEY`) and never returned by the API.
+- **Connections (panel-connectable integrations)**: connect external services from `/connections` — WhatsApp Business & Stripe (API key + test-ping), QuickBooks & Xero (**full OAuth2**: authorize redirect, state-validated callback, encrypted tokens with auto-refresh). Secrets are stored **AES-256-GCM encrypted** at rest (`APP_ENCRYPTION_KEY`) and never returned by the API.
+- **WhatsApp Business (v3.1)**: send messages from leads/quotes/invoices, a chat-style **inbox** (`/whatsapp`) with lead/contact matching by phone, signed inbound webhook (Meta `X-Hub-Signature-256` mandatory), and a `send_whatsapp` **automation action** with `{{field}}` templating (e.g. auto-welcome on `lead.created`).
+- **Accounting sync (v3.2)**: push issued invoices to QuickBooks Online or Xero with one click (`/accounting/invoices/:id/sync`) — sync state (SYNCED/FAILED + external id + attempts) tracked per invoice; retry by re-running.
 - **Outbound webhooks**: subscribe to events (`deal.created/moved`, `invoice.issued/paid`) and manage them in-panel (`/integrations`) — create with a one-time signing secret, send a test event, inspect delivery history. HMAC-SHA256 signature, replay window, idempotency, SSRF protection; the panel documents how the receiver verifies the signature.
 - **Email**: `simulated` and real `smtp` (nodemailer) drivers + template engine + EmailLog.
 - **CSV import/export**: export contacts/companies/deals; import contacts/companies (**dedup** + per-row errors).
@@ -175,7 +177,9 @@ All endpoints are served under the `/api/v1` prefix (Swagger: `/api/docs`).
 | **Automation** | `/automation/rules` |
 | **Custom fields** | `/custom-fields` |
 | **Reports** | `/reports/{pipeline,deals/summary,forecast,invoices/summary}` · `revenue/monthly` · `sales/by-owner` · `products/top` · `deals/won-lost` |
-| **Connections** | `GET /connections/catalog` · `GET/POST /connections` · `POST /connections/:id/test` · `PATCH/DELETE /connections/:id` |
+| **Connections** | `GET /connections/catalog` · `GET/POST /connections` · `POST /connections/:id/test` · `PATCH/DELETE /connections/:id` · OAuth: `GET /connections/:id/oauth/start`, `GET /connections/oauth/callback` |
+| **WhatsApp** | `GET /whatsapp/{status,conversations,thread/:phone}` · `POST /whatsapp/send` · public: `GET/POST /webhooks/whatsapp` (signed) |
+| **Accounting** | `GET /accounting/invoices/:id` · `POST /accounting/invoices/:id/sync` |
 | **Integrations** | `/integrations/webhooks` (+ inbound webhook HMAC verification) |
 | **Data** | `GET /data/export/:entity` · `POST /data/import/:entity` · `/data/duplicates/:entity` · `/data/merge/:entity` |
 | **Platform** | `/audit-logs` · `GET /search?q=` · `/gdpr/contacts/:id/{export,erase}` · `/tenants` (+ `:id/assign-user`) |
